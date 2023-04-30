@@ -1,0 +1,8 @@
+{
+  "sepolia": {
+    "TradePair": {
+      "address": "0x58FaA4C57137f198381e0eDCB70b884cee0b79D0",
+      "startBlock": 3393593
+    }
+  }
+}

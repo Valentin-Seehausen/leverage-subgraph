@@ -1,0 +1,39 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: TradePair
+    network: sepolia
+    source:
+      address: "0x58FaA4C57137f198381e0eDCB70b884cee0b79D0"
+      abi: TradePair
+      startBlock: 3393593
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - ChainlinkAggregatorSet
+        - LiquidityPoolSet
+        - PositionClosed
+        - PositionOpened
+        - ProtocolSet
+        - ProtocolShareTaken
+      abis:
+        - name: TradePair
+          file: ./abis/TradePair.json
+      eventHandlers:
+        - event: ChainlinkAggregatorSet(indexed address)
+          handler: handleChainlinkAggregatorSet
+        - event: LiquidityPoolSet(indexed address)
+          handler: handleLiquidityPoolSet
+        - event: PositionClosed(indexed address,uint256,uint256,uint256,int256)
+          handler: handlePositionClosed
+        - event: PositionOpened(indexed address,uint256,uint256,uint256,uint256,bool,uint256,uint256,uint256,uint256)
+          handler: handlePositionOpened
+        - event: ProtocolSet(indexed address)
+          handler: handleProtocolSet
+        - event: ProtocolShareTaken(address,uint256)
+          handler: handleProtocolShareTaken
+      file: ./src/trade-pair.ts
