@@ -30,6 +30,16 @@ export function getTrader(id: string): Trader {
   return trader as Trader;
 }
 
+export function getPosition(id: string): Position {
+  let position = Position.load(id);
+
+  if (position == null) {
+    position = new Position(id);
+  }
+
+  return position as Position;
+}
+
 export function handleChainlinkAggregatorSet(
   event: ChainlinkAggregatorSetEvent
 ): void {
@@ -59,7 +69,7 @@ export function handleLiquidityPoolSet(event: LiquidityPoolSetEvent): void {
 }
 
 export function handlePositionClosed(event: PositionClosedEvent): void {
-  let position = new Position(event.params.positionId.toString());
+  let position = getPosition(event.params.positionId.toString());
 
   position.closePrice = event.params.closePrice;
   position.closeDate = event.params.closeDate;
@@ -73,7 +83,7 @@ export function handlePositionClosed(event: PositionClosedEvent): void {
 export function handlePositionOpened(event: PositionOpenedEvent): void {
   log.info("handlePositionOpened", []);
 
-  let position = new Position(event.params.positionId.toString());
+  let position = getPosition(event.params.positionId.toString());
 
   position.trader = getTrader(event.params.trader.toHex()).id;
   position.collateral = event.params.collateral;
