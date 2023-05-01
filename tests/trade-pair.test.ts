@@ -14,6 +14,7 @@ import { handlePositionClosed, handlePositionOpened } from "../src/trade-pair";
 import { defaultAddress, newEvent } from "./utils/event.utils";
 import {
   closeDate,
+  closeDefaultPosition,
   closePrice,
   collateral,
   entryPrice,
@@ -156,13 +157,55 @@ describe("TradePair Tests", () => {
       "TradePair",
       defaultAddress.toHex(),
       "longPositionCount",
-      BigInt.fromI32(2).toString()
+      "2"
     );
     assert.fieldEquals(
       "TradePair",
       defaultAddress.toHex(),
       "shortPositionCount",
-      BigInt.fromI32(1).toString()
+      "1"
+    );
+  });
+
+  test("Decreases Stats on open", () => {
+    openDefaultPosition(); // long
+    let p1 = openDefaultPosition(); // long
+    let p2 = openDefaultPosition(false); // short
+
+    closeDefaultPosition(p1);
+    closeDefaultPosition(p2);
+
+    assert.entityCount("Position", 3);
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "longCollateral",
+      collateral.toString()
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "shortCollateral",
+      "0"
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "longShares",
+      shares.toString()
+    );
+    assert.fieldEquals("TradePair", defaultAddress.toHex(), "shortShares", "0");
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "longPositionCount",
+      "1"
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "shortPositionCount",
+      "0"
     );
   });
 });

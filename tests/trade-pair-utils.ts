@@ -8,7 +8,7 @@ import {
   ProtocolSet,
   ProtocolShareTaken,
 } from "../generated/TradePair/TradePair";
-import { handlePositionOpened } from "../src/trade-pair";
+import { handlePositionClosed, handlePositionOpened } from "../src/trade-pair";
 import { defaultAddress, newEvent } from "./utils/event.utils";
 
 export let positionId = BigInt.fromI32(1);
@@ -49,6 +49,18 @@ export function openDefaultPosition(isLong_: boolean = isLong): BigInt {
   );
 
   return positionCounter;
+}
+
+export function closeDefaultPosition(positionId_: BigInt = positionId): void {
+  handlePositionClosed(
+    newEvent<PositionClosed>([
+      ethereum.Value.fromAddress(defaultAddress), // trader
+      ethereum.Value.fromUnsignedBigInt(positionId_), // positionId
+      ethereum.Value.fromUnsignedBigInt(closePrice), // closePrice
+      ethereum.Value.fromUnsignedBigInt(closeDate), // closeDate
+      ethereum.Value.fromUnsignedBigInt(pnl), // pnl
+    ])
+  );
 }
 
 export function createChainlinkAggregatorSetEvent(
