@@ -1,3 +1,28 @@
+type Position @entity {
+  id: ID! # positionId
+  trader: Trader!
+  collateral: BigInt! # uint256
+  shares: BigInt! # uint256
+  leverage: BigInt! # uint256
+  isLong: Boolean! # bool
+  entryPrice: BigInt! # uint256
+  liquidationPrice: BigInt! # uint256
+  takeProfitPrice: BigInt! # uint256
+  openDate: BigInt! # uint256
+  openTransactionHash: Bytes!
+  closePrice: BigInt # uint256
+  closeDate: BigInt # uint256
+  closeTransactionHash: Bytes
+  pnl: BigInt # int256
+  isOpen: Boolean! 
+}
+
+type Trader @entity {
+  id: ID!
+  positions: [Position!]! @derivedFrom(field: "trader")
+}
+
+
 type ChainlinkAggregatorSet @entity(immutable: true) {
   id: Bytes!
   aggregator: Bytes! # address

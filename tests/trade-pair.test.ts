@@ -3,48 +3,65 @@ import {
   describe,
   test,
   clearStore,
-  beforeAll,
-  afterAll
-} from "matchstick-as/assembly/index"
-import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { ChainlinkAggregatorSet } from "../generated/schema"
-import { ChainlinkAggregatorSet as ChainlinkAggregatorSetEvent } from "../generated/TradePair/TradePair"
-import { handleChainlinkAggregatorSet } from "../src/trade-pair"
-import { createChainlinkAggregatorSetEvent } from "./trade-pair-utils"
+  afterEach,
+} from "matchstick-as/assembly/index";
+import { BigInt, ethereum } from "@graphprotocol/graph-ts";
+import { PositionOpened } from "../generated/TradePair/TradePair";
+import { handlePositionOpened } from "../src/trade-pair";
+import { defaultAddress, newEvent } from "./utils/event.utils";
 
-// Tests structure (matchstick-as >=0.5.0)
-// https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0
+describe("TradePair Tests", () => {
+  afterEach(() => {
+    clearStore();
+  });
 
-describe("Describe entity assertions", () => {
-  beforeAll(() => {
-    let aggregator = Address.fromString(
-      "0x0000000000000000000000000000000000000001"
-    )
-    let newChainlinkAggregatorSetEvent = createChainlinkAggregatorSetEvent(
-      aggregator
-    )
-    handleChainlinkAggregatorSet(newChainlinkAggregatorSetEvent)
-  })
+  test("Opens Position", () => {
+    let positionId = BigInt.fromI32(1);
+    let collateral = BigInt.fromI32(1_000_000);
+    let shares = BigInt.fromI32(1_000_000_000);
+    let leverage = BigInt.fromI32(5_000_000);
+    let isLong = false;
+    let entryPrice = BigInt.fromI32(20_000);
+    let liquidationPrice = BigInt.fromI32(22_000);
+    let takeProfitPrice = BigInt.fromI32(18_000);
+    let openDate = BigInt.fromI32(1234);
 
-  afterAll(() => {
-    clearStore()
-  })
+    handlePositionOpened(
+      newEvent<PositionOpened>([
+        ethereum.Value.fromAddress(defaultAddress), // trader
+        ethereum.Value.fromUnsignedBigInt(positionId), // positionId
+        ethereum.Value.fromUnsignedBigInt(collateral), // collateral
+        ethereum.Value.fromUnsignedBigInt(shares), // shares
+        ethereum.Value.fromUnsignedBigInt(leverage), // leverage
+        ethereum.Value.fromBoolean(isLong), // isLong
+        ethereum.Value.fromUnsignedBigInt(entryPrice), // entryPrice
+        ethereum.Value.fromUnsignedBigInt(liquidationPrice), // liquidationPrice
+        ethereum.Value.fromUnsignedBigInt(takeProfitPrice), // takeProfitPrice
+        ethereum.Value.fromUnsignedBigInt(openDate), // openDate
+      ])
+    );
 
-  // For more test scenarios, see:
-  // https://thegraph.com/docs/en/developer/matchstick/#write-a-unit-test
+    assert.entityCount("Position", 1);
 
-  test("ChainlinkAggregatorSet created and stored", () => {
-    assert.entityCount("ChainlinkAggregatorSet", 1)
-
-    // 0xa16081f360e3847006db660bae1c6d1b2e17ec2a is the default address used in newMockEvent() function
+    assert.fieldEquals("Position", "1", "trader", defaultAddress.toHex());
+    assert.fieldEquals("Position", "1", "collateral", collateral.toString());
+    assert.fieldEquals("Position", "1", "shares", shares.toString());
+    assert.fieldEquals("Position", "1", "leverage", leverage.toString());
+    assert.fieldEquals("Position", "1", "isLong", isLong.toString());
+    assert.fieldEquals("Position", "1", "entryPrice", entryPrice.toString());
     assert.fieldEquals(
-      "ChainlinkAggregatorSet",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "aggregator",
-      "0x0000000000000000000000000000000000000001"
-    )
-
-    // More assert options:
-    // https://thegraph.com/docs/en/developer/matchstick/#asserts
-  })
-})
+      "Position",
+      "1",
+      "liquidationPrice",
+      liquidationPrice.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      "1",
+      "takeProfitPrice",
+      takeProfitPrice.toString()
+    );
+    assert.fieldEquals("Position", "1", "openDate", openDate.toString());
+    assert.fieldEquals("Position", "1", "isLong", isLong.toString());
+  });
+});
