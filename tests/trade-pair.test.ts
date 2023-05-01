@@ -12,6 +12,20 @@ import {
 } from "../generated/TradePair/TradePair";
 import { handlePositionClosed, handlePositionOpened } from "../src/trade-pair";
 import { defaultAddress, newEvent } from "./utils/event.utils";
+import {
+  closeDate,
+  closePrice,
+  collateral,
+  entryPrice,
+  isLong,
+  leverage,
+  liquidationPrice,
+  openDate,
+  openDefaultPosition,
+  pnl,
+  shares,
+  takeProfitPrice,
+} from "./trade-pair-utils";
 
 describe("TradePair Tests", () => {
   afterEach(() => {
@@ -19,85 +33,49 @@ describe("TradePair Tests", () => {
   });
 
   test("Opens Position", () => {
-    let positionId = BigInt.fromI32(1);
-    let collateral = BigInt.fromI32(1_000_000);
-    let shares = BigInt.fromI32(1_000_000_000);
-    let leverage = BigInt.fromI32(5_000_000);
-    let isLong = false;
-    let entryPrice = BigInt.fromI32(20_000);
-    let liquidationPrice = BigInt.fromI32(22_000);
-    let takeProfitPrice = BigInt.fromI32(18_000);
-    let openDate = BigInt.fromI32(1234);
-
-    handlePositionOpened(
-      newEvent<PositionOpened>([
-        ethereum.Value.fromAddress(defaultAddress), // trader
-        ethereum.Value.fromUnsignedBigInt(positionId), // positionId
-        ethereum.Value.fromUnsignedBigInt(collateral), // collateral
-        ethereum.Value.fromUnsignedBigInt(shares), // shares
-        ethereum.Value.fromUnsignedBigInt(leverage), // leverage
-        ethereum.Value.fromBoolean(isLong), // isLong
-        ethereum.Value.fromUnsignedBigInt(entryPrice), // entryPrice
-        ethereum.Value.fromUnsignedBigInt(liquidationPrice), // liquidationPrice
-        ethereum.Value.fromUnsignedBigInt(takeProfitPrice), // takeProfitPrice
-        ethereum.Value.fromUnsignedBigInt(openDate), // openDate
-      ])
-    );
+    let positionId = openDefaultPosition().toString();
 
     assert.entityCount("Position", 1);
 
-    assert.fieldEquals("Position", "1", "trader", defaultAddress.toHex());
-    assert.fieldEquals("Position", "1", "collateral", collateral.toString());
-    assert.fieldEquals("Position", "1", "shares", shares.toString());
-    assert.fieldEquals("Position", "1", "leverage", leverage.toString());
-    assert.fieldEquals("Position", "1", "isLong", isLong.toString());
-    assert.fieldEquals("Position", "1", "entryPrice", entryPrice.toString());
     assert.fieldEquals(
       "Position",
-      "1",
+      positionId,
+      "trader",
+      defaultAddress.toHex()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId,
+      "collateral",
+      collateral.toString()
+    );
+    assert.fieldEquals("Position", positionId, "shares", shares.toString());
+    assert.fieldEquals("Position", positionId, "leverage", leverage.toString());
+    assert.fieldEquals("Position", positionId, "isLong", isLong.toString());
+    assert.fieldEquals(
+      "Position",
+      positionId,
+      "entryPrice",
+      entryPrice.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId,
       "liquidationPrice",
       liquidationPrice.toString()
     );
     assert.fieldEquals(
       "Position",
-      "1",
+      positionId,
       "takeProfitPrice",
       takeProfitPrice.toString()
     );
-    assert.fieldEquals("Position", "1", "openDate", openDate.toString());
-    assert.fieldEquals("Position", "1", "isLong", isLong.toString());
-    assert.fieldEquals("Position", "1", "isOpen", "true");
+    assert.fieldEquals("Position", positionId, "openDate", openDate.toString());
+    assert.fieldEquals("Position", positionId, "isOpen", "true");
   });
 
   test("Closes Position", () => {
-    let positionId = BigInt.fromI32(1);
-    let collateral = BigInt.fromI32(1_000_000);
-    let shares = BigInt.fromI32(1_000_000_000);
-    let leverage = BigInt.fromI32(5_000_000);
-    let isLong = false;
-    let entryPrice = BigInt.fromI32(20_000);
-    let liquidationPrice = BigInt.fromI32(22_000);
-    let takeProfitPrice = BigInt.fromI32(18_000);
-    let openDate = BigInt.fromI32(1234);
-
-    let closePrice = BigInt.fromI32(22_000);
-    let closeDate = BigInt.fromI32(12345);
-    let pnl = BigInt.fromI32(1_000_000_000);
-
-    handlePositionOpened(
-      newEvent<PositionOpened>([
-        ethereum.Value.fromAddress(defaultAddress), // trader
-        ethereum.Value.fromUnsignedBigInt(positionId), // positionId
-        ethereum.Value.fromUnsignedBigInt(collateral), // collateral
-        ethereum.Value.fromUnsignedBigInt(shares), // shares
-        ethereum.Value.fromUnsignedBigInt(leverage), // leverage
-        ethereum.Value.fromBoolean(isLong), // isLong
-        ethereum.Value.fromUnsignedBigInt(entryPrice), // entryPrice
-        ethereum.Value.fromUnsignedBigInt(liquidationPrice), // liquidationPrice
-        ethereum.Value.fromUnsignedBigInt(takeProfitPrice), // takeProfitPrice
-        ethereum.Value.fromUnsignedBigInt(openDate), // openDate
-      ])
-    );
+    let positionId = openDefaultPosition();
 
     handlePositionClosed(
       newEvent<PositionClosed>([
@@ -111,11 +89,80 @@ describe("TradePair Tests", () => {
 
     assert.entityCount("Position", 1);
 
-    assert.fieldEquals("Position", "1", "trader", defaultAddress.toHex());
-    assert.fieldEquals("Position", "1", "closePrice", closePrice.toString());
-    assert.fieldEquals("Position", "1", "closeDate", closeDate.toString());
-    assert.fieldEquals("Position", "1", "pnl", pnl.toString());
-    assert.fieldEquals("Position", "1", "isLong", isLong.toString());
-    assert.fieldEquals("Position", "1", "isOpen", "false");
+    assert.fieldEquals(
+      "Position",
+      positionId.toString(),
+      "trader",
+      defaultAddress.toHex()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId.toString(),
+      "closePrice",
+      closePrice.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId.toString(),
+      "closeDate",
+      closeDate.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId.toString(),
+      "pnl",
+      pnl.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId.toString(),
+      "isLong",
+      isLong.toString()
+    );
+    assert.fieldEquals("Position", positionId.toString(), "isOpen", "false");
+  });
+
+  test("Increases Stats on open", () => {
+    openDefaultPosition(); // long
+    openDefaultPosition(); // long
+    openDefaultPosition(false); // short
+
+    assert.entityCount("Position", 3);
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "longCollateral",
+      collateral.times(BigInt.fromI32(2)).toString()
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "shortCollateral",
+      collateral.toString()
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "longShares",
+      shares.times(BigInt.fromI32(2)).toString()
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "shortShares",
+      shares.toString()
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "longPositionCount",
+      BigInt.fromI32(2).toString()
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "shortPositionCount",
+      BigInt.fromI32(1).toString()
+    );
   });
 });

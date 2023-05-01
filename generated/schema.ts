@@ -303,6 +303,120 @@ export class Trader extends Entity {
   }
 }
 
+export class TradePair extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save TradePair entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type TradePair must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("TradePair", id.toString(), this);
+    }
+  }
+
+  static load(id: string): TradePair | null {
+    return changetype<TradePair | null>(store.get("TradePair", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get longCollateral(): BigInt {
+    let value = this.get("longCollateral");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set longCollateral(value: BigInt) {
+    this.set("longCollateral", Value.fromBigInt(value));
+  }
+
+  get shortCollateral(): BigInt {
+    let value = this.get("shortCollateral");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set shortCollateral(value: BigInt) {
+    this.set("shortCollateral", Value.fromBigInt(value));
+  }
+
+  get longShares(): BigInt {
+    let value = this.get("longShares");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set longShares(value: BigInt) {
+    this.set("longShares", Value.fromBigInt(value));
+  }
+
+  get shortShares(): BigInt {
+    let value = this.get("shortShares");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set shortShares(value: BigInt) {
+    this.set("shortShares", Value.fromBigInt(value));
+  }
+
+  get longPositionCount(): BigInt {
+    let value = this.get("longPositionCount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set longPositionCount(value: BigInt) {
+    this.set("longPositionCount", Value.fromBigInt(value));
+  }
+
+  get shortPositionCount(): BigInt {
+    let value = this.get("shortPositionCount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set shortPositionCount(value: BigInt) {
+    this.set("shortPositionCount", Value.fromBigInt(value));
+  }
+}
+
 export class ChainlinkAggregatorSet extends Entity {
   constructor(id: Bytes) {
     super();

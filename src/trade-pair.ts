@@ -1,4 +1,4 @@
-import { log } from "@graphprotocol/graph-ts";
+import { log, BigInt } from "@graphprotocol/graph-ts";
 
 import {
   ChainlinkAggregatorSet as ChainlinkAggregatorSetEvent,
@@ -16,6 +16,7 @@ import {
   PositionOpened,
   ProtocolSet,
   ProtocolShareTaken,
+  TradePair,
   Trader,
 } from "../generated/schema";
 
@@ -38,6 +39,52 @@ export function getPosition(id: string): Position {
   }
 
   return position as Position;
+}
+
+export function getTradePair(id: string): TradePair {
+  let tradePair = TradePair.load(id);
+
+  if (tradePair == null) {
+    tradePair = new TradePair(id);
+    tradePair.longCollateral = BigInt.fromI32(0);
+    tradePair.shortCollateral = BigInt.fromI32(0);
+    tradePair.longShares = BigInt.fromI32(0);
+    tradePair.shortShares = BigInt.fromI32(0);
+    tradePair.longPositionCount = BigInt.fromI32(0);
+    tradePair.shortPositionCount = BigInt.fromI32(0);
+  }
+
+  return tradePair as TradePair;
+}
+
+export function addStatsToTradePair(
+  tradePairId: string,
+  collateral: BigInt,
+  shares: BigInt,
+  isLong: boolean
+): void {
+  let tradePair = getTradePair(tradePairId);
+
+  // Is position opened or closed?
+  let countDirection = collateral.gt(BigInt.fromI32(0))
+    ? BigInt.fromI32(1)
+    : BigInt.fromI32(-1);
+
+  if (isLong) {
+    tradePair.longCollateral = tradePair.longCollateral.plus(collateral);
+    tradePair.longShares = tradePair.longShares.plus(shares);
+    tradePair.longPositionCount = tradePair.longPositionCount.plus(
+      countDirection
+    );
+  } else {
+    tradePair.shortCollateral = tradePair.shortCollateral.plus(collateral);
+    tradePair.shortShares = tradePair.shortShares.plus(shares);
+    tradePair.shortPositionCount = tradePair.shortPositionCount.plus(
+      countDirection
+    );
+  }
+
+  tradePair.save();
 }
 
 export function handleChainlinkAggregatorSet(
@@ -78,6 +125,13 @@ export function handlePositionClosed(event: PositionClosedEvent): void {
   position.isOpen = false;
 
   position.save();
+
+  addStatsToTradePair(
+    event.address.toHex(),
+    position.collateral.neg(),
+    position.shares.neg(),
+    position.isLong
+  );
 }
 
 export function handlePositionOpened(event: PositionOpenedEvent): void {
@@ -98,6 +152,13 @@ export function handlePositionOpened(event: PositionOpenedEvent): void {
   position.isOpen = true;
 
   position.save();
+
+  addStatsToTradePair(
+    event.address.toHex(),
+    event.params.collateral,
+    event.params.shares,
+    event.params.isLong
+  );
 }
 
 export function handleProtocolSet(event: ProtocolSetEvent): void {

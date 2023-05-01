@@ -22,6 +22,15 @@ type Trader @entity {
   positions: [Position!]! @derivedFrom(field: "trader")
 }
 
+type TradePair @entity {
+  id: ID!
+  longCollateral: BigInt! # uint256
+  shortCollateral: BigInt! # uint256
+  longShares: BigInt! # uint256
+  shortShares: BigInt! # uint256
+  longPositionCount: BigInt! # uint256
+  shortPositionCount: BigInt! # uint256
+}
 
 type ChainlinkAggregatorSet @entity(immutable: true) {
   id: Bytes!
