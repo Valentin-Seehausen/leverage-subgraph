@@ -32,6 +32,7 @@ type TradePair @entity {
   shortPositionCount: BigInt! # uint256
 
   protocol: Protocol
+  liquidityPool: LiquidityPool
 }
 
 type Protocol @entity {
