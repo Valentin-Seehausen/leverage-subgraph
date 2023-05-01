@@ -4,9 +4,14 @@ import {
   PositionClosed as PositionClosedEvent,
   PositionOpened as PositionOpenedEvent,
   ProtocolSet as ProtocolSetEvent,
+  LiquidityPoolSet as LiquidityPoolSetEvent,
   ProtocolShareTaken as ProtocolShareTakenEvent,
 } from "../generated/TradePair/TradePair";
 import { Position, Protocol, TradePair, Trader } from "../generated/schema";
+import {
+  getLiquidityPool,
+  removeOpenInterestFromLiquidityPool,
+} from "./liquidity-pool";
 
 export function getTrader(id: string): Trader {
   let trader = Trader.load(id);
@@ -51,9 +56,9 @@ export function getProtocol(id: string): Protocol {
   if (protocol == null) {
     protocol = new Protocol(id);
     protocol.totalShares = BigInt.fromI32(0);
-    protocol.totalCollateral = BigInt.fromI32(0);
   }
 
+  protocol.save();
   return protocol as Protocol;
 }
 
@@ -83,19 +88,18 @@ export function addStatsToTradePair(
       countDirection
     );
   }
-
   tradePair.save();
 }
 
 export function handlePositionClosed(event: PositionClosedEvent): void {
   let position = getPosition(event.params.positionId.toString());
+  let tradePair = getTradePair(event.address.toHex());
 
   position.closePrice = event.params.closePrice;
   position.closeDate = event.params.closeDate;
   position.pnl = event.params.pnl;
   position.closeTransactionHash = event.transaction.hash;
   position.isOpen = false;
-
   position.save();
 
   addStatsToTradePair(
@@ -103,6 +107,11 @@ export function handlePositionClosed(event: PositionClosedEvent): void {
     position.collateral.neg(),
     position.shares.neg(),
     position.isLong
+  );
+
+  removeOpenInterestFromLiquidityPool(
+    tradePair.liquidityPool,
+    position.shares.times(BigInt.fromI32(2))
   );
 }
 
@@ -134,9 +143,17 @@ export function handlePositionOpened(event: PositionOpenedEvent): void {
 }
 
 export function handleProtocolSet(event: ProtocolSetEvent): void {
-  let protocol = getProtocol(event.address.toHex());
+  let protocol = getProtocol(event.params.protocol.toHex());
+  let tradePair = getTradePair(event.address.toHex());
+  tradePair.protocol = protocol.id;
+  tradePair.save();
+}
 
-  protocol.save();
+export function handleLiquidityPoolSet(event: LiquidityPoolSetEvent): void {
+  let liquidityPool = getLiquidityPool(event.params.liquidityPool.toHex());
+  let tradePair = getTradePair(event.address.toHex());
+  tradePair.liquidityPool = liquidityPool.id;
+  tradePair.save();
 }
 
 export function handleProtocolShareTaken(event: ProtocolShareTakenEvent): void {

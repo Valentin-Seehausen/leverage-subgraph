@@ -415,6 +415,40 @@ export class TradePair extends Entity {
   set shortPositionCount(value: BigInt) {
     this.set("shortPositionCount", Value.fromBigInt(value));
   }
+
+  get protocol(): string | null {
+    let value = this.get("protocol");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set protocol(value: string | null) {
+    if (!value) {
+      this.unset("protocol");
+    } else {
+      this.set("protocol", Value.fromString(<string>value));
+    }
+  }
+
+  get liquidityPool(): string | null {
+    let value = this.get("liquidityPool");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set liquidityPool(value: string | null) {
+    if (!value) {
+      this.unset("liquidityPool");
+    } else {
+      this.set("liquidityPool", Value.fromString(<string>value));
+    }
+  }
 }
 
 export class Protocol extends Entity {
@@ -464,9 +498,45 @@ export class Protocol extends Entity {
   set totalShares(value: BigInt) {
     this.set("totalShares", Value.fromBigInt(value));
   }
+}
 
-  get totalCollateral(): BigInt {
-    let value = this.get("totalCollateral");
+export class LiquidityPool extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save LiquidityPool entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type LiquidityPool must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("LiquidityPool", id.toString(), this);
+    }
+  }
+
+  static load(id: string): LiquidityPool | null {
+    return changetype<LiquidityPool | null>(store.get("LiquidityPool", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get shares(): BigInt {
+    let value = this.get("shares");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -474,7 +544,50 @@ export class Protocol extends Entity {
     }
   }
 
-  set totalCollateral(value: BigInt) {
-    this.set("totalCollateral", Value.fromBigInt(value));
+  set shares(value: BigInt) {
+    this.set("shares", Value.fromBigInt(value));
+  }
+
+  get openInterestShares(): BigInt {
+    let value = this.get("openInterestShares");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set openInterestShares(value: BigInt) {
+    this.set("openInterestShares", Value.fromBigInt(value));
+  }
+
+  get assets(): BigInt {
+    let value = this.get("assets");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set assets(value: BigInt) {
+    this.set("assets", Value.fromBigInt(value));
+  }
+
+  get protocol(): string | null {
+    let value = this.get("protocol");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set protocol(value: string | null) {
+    if (!value) {
+      this.unset("protocol");
+    } else {
+      this.set("protocol", Value.fromString(<string>value));
+    }
   }
 }

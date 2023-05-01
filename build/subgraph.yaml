@@ -38,3 +38,41 @@ dataSources:
         - event: ProtocolShareTaken(address,uint256)
           handler: handleProtocolShareTaken
       file: TradePair/TradePair.wasm
+  - kind: ethereum
+    name: LiquidityPool
+    network: sepolia
+    source:
+      address: "0x266951D992Dcb5B4b5554f8B2B8B88E8547e3B76"
+      abi: LiquidityPool
+      startBlock: 3393593
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+        - Deposit
+        - LiquidityPoolProtocolSet
+        - Redeem
+        - TradePairAdded
+        - TradePairRemoved
+        - Transfer
+      abis:
+        - name: LiquidityPool
+          file: LiquidityPool/abis/LiquidityPool.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: Deposit(indexed address,uint256,uint256)
+          handler: handleDeposit
+        - event: ProtocolSet(indexed address)
+          handler: handleProtocolSet
+        - event: Redeem(indexed address,uint256,uint256,uint256)
+          handler: handleRedeem
+        - event: TradePairAdded(indexed address)
+          handler: handleTradePairAdded
+        - event: TradePairRemoved(indexed address)
+          handler: handleTradePairRemoved
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: LiquidityPool/LiquidityPool.wasm

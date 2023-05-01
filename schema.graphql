@@ -30,9 +30,21 @@ type TradePair @entity {
   shortShares: BigInt! # uint256
   longPositionCount: BigInt! # uint256
   shortPositionCount: BigInt! # uint256
+
+  protocol: Protocol
+  liquidityPool: LiquidityPool
 }
 
 type Protocol @entity {
   id: ID!
   totalShares: BigInt! # uint256
+}
+
+type LiquidityPool @entity {
+  id: ID!
+  shares: BigInt! # uint256
+  openInterestShares: BigInt! # uint256
+  assets: BigInt! # uint256
+
+  protocol: Protocol
 }
