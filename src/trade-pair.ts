@@ -1,24 +1,12 @@
 import { log, BigInt } from "@graphprotocol/graph-ts";
 
 import {
-  ChainlinkAggregatorSet as ChainlinkAggregatorSetEvent,
-  LiquidityPoolSet as LiquidityPoolSetEvent,
   PositionClosed as PositionClosedEvent,
   PositionOpened as PositionOpenedEvent,
   ProtocolSet as ProtocolSetEvent,
   ProtocolShareTaken as ProtocolShareTakenEvent,
 } from "../generated/TradePair/TradePair";
-import {
-  ChainlinkAggregatorSet,
-  LiquidityPoolSet,
-  Position,
-  PositionClosed,
-  PositionOpened,
-  ProtocolSet,
-  ProtocolShareTaken,
-  TradePair,
-  Trader,
-} from "../generated/schema";
+import { Position, Protocol, TradePair, Trader } from "../generated/schema";
 
 export function getTrader(id: string): Trader {
   let trader = Trader.load(id);
@@ -57,6 +45,18 @@ export function getTradePair(id: string): TradePair {
   return tradePair as TradePair;
 }
 
+export function getProtocol(id: string): Protocol {
+  let protocol = Protocol.load(id);
+
+  if (protocol == null) {
+    protocol = new Protocol(id);
+    protocol.totalShares = BigInt.fromI32(0);
+    protocol.totalCollateral = BigInt.fromI32(0);
+  }
+
+  return protocol as Protocol;
+}
+
 export function addStatsToTradePair(
   tradePairId: string,
   collateral: BigInt,
@@ -85,34 +85,6 @@ export function addStatsToTradePair(
   }
 
   tradePair.save();
-}
-
-export function handleChainlinkAggregatorSet(
-  event: ChainlinkAggregatorSetEvent
-): void {
-  let entity = new ChainlinkAggregatorSet(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-  entity.aggregator = event.params.aggregator;
-
-  entity.blockNumber = event.block.number;
-  entity.blockTimestamp = event.block.timestamp;
-  entity.transactionHash = event.transaction.hash;
-
-  entity.save();
-}
-
-export function handleLiquidityPoolSet(event: LiquidityPoolSetEvent): void {
-  let entity = new LiquidityPoolSet(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-  entity.liquidityPool = event.params.liquidityPool;
-
-  entity.blockNumber = event.block.number;
-  entity.blockTimestamp = event.block.timestamp;
-  entity.transactionHash = event.transaction.hash;
-
-  entity.save();
 }
 
 export function handlePositionClosed(event: PositionClosedEvent): void {
@@ -162,28 +134,14 @@ export function handlePositionOpened(event: PositionOpenedEvent): void {
 }
 
 export function handleProtocolSet(event: ProtocolSetEvent): void {
-  let entity = new ProtocolSet(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-  entity.protocol = event.params.protocol;
+  let protocol = getProtocol(event.address.toHex());
 
-  entity.blockNumber = event.block.number;
-  entity.blockTimestamp = event.block.timestamp;
-  entity.transactionHash = event.transaction.hash;
-
-  entity.save();
+  protocol.save();
 }
 
 export function handleProtocolShareTaken(event: ProtocolShareTakenEvent): void {
-  let entity = new ProtocolShareTaken(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-  entity.protocol = event.params.protocol;
-  entity.protocolShare = event.params.protocolShare;
+  let protocol = getProtocol(event.address.toHex());
+  protocol.totalShares = protocol.totalShares.plus(event.params.protocolShare);
 
-  entity.blockNumber = event.block.number;
-  entity.blockTimestamp = event.block.timestamp;
-  entity.transactionHash = event.transaction.hash;
-
-  entity.save();
+  protocol.save();
 }

@@ -32,64 +32,7 @@ type TradePair @entity {
   shortPositionCount: BigInt! # uint256
 }
 
-type ChainlinkAggregatorSet @entity(immutable: true) {
-  id: Bytes!
-  aggregator: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type LiquidityPoolSet @entity(immutable: true) {
-  id: Bytes!
-  liquidityPool: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type PositionClosed @entity(immutable: true) {
-  id: Bytes!
-  trader: Bytes! # address
-  positionId: BigInt! # uint256
-  closePrice: BigInt! # uint256
-  closeDate: BigInt! # uint256
-  pnl: BigInt! # int256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type PositionOpened @entity(immutable: true) {
-  id: Bytes!
-  trader: Bytes! # address
-  positionId: BigInt! # uint256
-  collateral: BigInt! # uint256
-  shares: BigInt! # uint256
-  leverage: BigInt! # uint256
-  isLong: Boolean! # bool
-  entryPrice: BigInt! # uint256
-  liquidationPrice: BigInt! # uint256
-  takeProfitPrice: BigInt! # uint256
-  openDate: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type ProtocolSet @entity(immutable: true) {
-  id: Bytes!
-  protocol: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type ProtocolShareTaken @entity(immutable: true) {
-  id: Bytes!
-  protocol: Bytes! # address
-  protocolShare: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type Protocol @entity {
+  id: ID!
+  totalShares: BigInt! # uint256
 }

@@ -9,8 +9,13 @@ import { BigInt, ethereum } from "@graphprotocol/graph-ts";
 import {
   PositionClosed,
   PositionOpened,
+  ProtocolShareTaken,
 } from "../generated/TradePair/TradePair";
-import { handlePositionClosed, handlePositionOpened } from "../src/trade-pair";
+import {
+  handlePositionClosed,
+  handlePositionOpened,
+  handleProtocolShareTaken,
+} from "../src/trade-pair";
 import { defaultAddress, newEvent } from "./utils/event.utils";
 import {
   closeDate,
@@ -206,6 +211,23 @@ describe("TradePair Tests", () => {
       defaultAddress.toHex(),
       "shortPositionCount",
       "0"
+    );
+  });
+
+  test("Logs Protocol Shares", () => {
+    handleProtocolShareTaken(
+      newEvent<ProtocolShareTaken>([
+        ethereum.Value.fromAddress(defaultAddress), // protocol
+        ethereum.Value.fromUnsignedBigInt(shares), // shares
+      ])
+    );
+
+    assert.entityCount("Protocol", 1);
+    assert.fieldEquals(
+      "Protocol",
+      defaultAddress.toHex(),
+      "totalShares",
+      shares.toString()
     );
   });
 });
