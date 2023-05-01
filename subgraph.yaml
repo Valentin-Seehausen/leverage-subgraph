@@ -24,8 +24,6 @@ dataSources:
         - name: TradePair
           file: ./abis/TradePair.json
       eventHandlers:
-        - event: ChainlinkAggregatorSet(indexed address)
-          handler: handleChainlinkAggregatorSet
         - event: LiquidityPoolSet(indexed address)
           handler: handleLiquidityPoolSet
         - event: PositionClosed(indexed address,uint256,uint256,uint256,int256)
@@ -61,18 +59,12 @@ dataSources:
         - name: LiquidityPool
           file: ./abis/LiquidityPool.json
       eventHandlers:
-        - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
         - event: Deposit(indexed address,uint256,uint256)
           handler: handleDeposit
         - event: ProtocolSet(indexed address)
           handler: handleProtocolSet
         - event: Redeem(indexed address,uint256,uint256,uint256)
           handler: handleRedeem
-        - event: TradePairAdded(indexed address)
-          handler: handleTradePairAdded
-        - event: TradePairRemoved(indexed address)
-          handler: handleTradePairRemoved
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
       file: ./src/liquidity-pool.ts
