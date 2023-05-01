@@ -3,48 +3,231 @@ import {
   describe,
   test,
   clearStore,
-  beforeAll,
-  afterAll
-} from "matchstick-as/assembly/index"
-import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { ChainlinkAggregatorSet } from "../generated/schema"
-import { ChainlinkAggregatorSet as ChainlinkAggregatorSetEvent } from "../generated/TradePair/TradePair"
-import { handleChainlinkAggregatorSet } from "../src/trade-pair"
-import { createChainlinkAggregatorSetEvent } from "./trade-pair-utils"
+  afterEach,
+} from "matchstick-as/assembly/index";
+import { BigInt, ethereum } from "@graphprotocol/graph-ts";
+import {
+  PositionClosed,
+  PositionOpened,
+  ProtocolShareTaken,
+} from "../generated/TradePair/TradePair";
+import {
+  handlePositionClosed,
+  handlePositionOpened,
+  handleProtocolShareTaken,
+} from "../src/trade-pair";
+import { defaultAddress, newEvent } from "./utils/event.utils";
+import {
+  closeDate,
+  closeDefaultPosition,
+  closePrice,
+  collateral,
+  entryPrice,
+  isLong,
+  leverage,
+  liquidationPrice,
+  openDate,
+  openDefaultPosition,
+  pnl,
+  shares,
+  takeProfitPrice,
+} from "./trade-pair-utils";
 
-// Tests structure (matchstick-as >=0.5.0)
-// https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0
+describe("TradePair Tests", () => {
+  afterEach(() => {
+    clearStore();
+  });
 
-describe("Describe entity assertions", () => {
-  beforeAll(() => {
-    let aggregator = Address.fromString(
-      "0x0000000000000000000000000000000000000001"
-    )
-    let newChainlinkAggregatorSetEvent = createChainlinkAggregatorSetEvent(
-      aggregator
-    )
-    handleChainlinkAggregatorSet(newChainlinkAggregatorSetEvent)
-  })
+  test("Opens Position", () => {
+    let positionId = openDefaultPosition().toString();
 
-  afterAll(() => {
-    clearStore()
-  })
+    assert.entityCount("Position", 1);
 
-  // For more test scenarios, see:
-  // https://thegraph.com/docs/en/developer/matchstick/#write-a-unit-test
-
-  test("ChainlinkAggregatorSet created and stored", () => {
-    assert.entityCount("ChainlinkAggregatorSet", 1)
-
-    // 0xa16081f360e3847006db660bae1c6d1b2e17ec2a is the default address used in newMockEvent() function
     assert.fieldEquals(
-      "ChainlinkAggregatorSet",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
-      "aggregator",
-      "0x0000000000000000000000000000000000000001"
-    )
+      "Position",
+      positionId,
+      "trader",
+      defaultAddress.toHex()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId,
+      "collateral",
+      collateral.toString()
+    );
+    assert.fieldEquals("Position", positionId, "shares", shares.toString());
+    assert.fieldEquals("Position", positionId, "leverage", leverage.toString());
+    assert.fieldEquals("Position", positionId, "isLong", isLong.toString());
+    assert.fieldEquals(
+      "Position",
+      positionId,
+      "entryPrice",
+      entryPrice.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId,
+      "liquidationPrice",
+      liquidationPrice.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId,
+      "takeProfitPrice",
+      takeProfitPrice.toString()
+    );
+    assert.fieldEquals("Position", positionId, "openDate", openDate.toString());
+    assert.fieldEquals("Position", positionId, "isOpen", "true");
+  });
 
-    // More assert options:
-    // https://thegraph.com/docs/en/developer/matchstick/#asserts
-  })
-})
+  test("Closes Position", () => {
+    let positionId = openDefaultPosition();
+
+    handlePositionClosed(
+      newEvent<PositionClosed>([
+        ethereum.Value.fromAddress(defaultAddress), // trader
+        ethereum.Value.fromUnsignedBigInt(positionId), // positionId
+        ethereum.Value.fromUnsignedBigInt(closePrice), // closePrice
+        ethereum.Value.fromUnsignedBigInt(closeDate), // closeDate
+        ethereum.Value.fromUnsignedBigInt(pnl), // pnl
+      ])
+    );
+
+    assert.entityCount("Position", 1);
+
+    assert.fieldEquals(
+      "Position",
+      positionId.toString(),
+      "trader",
+      defaultAddress.toHex()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId.toString(),
+      "closePrice",
+      closePrice.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId.toString(),
+      "closeDate",
+      closeDate.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId.toString(),
+      "pnl",
+      pnl.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionId.toString(),
+      "isLong",
+      isLong.toString()
+    );
+    assert.fieldEquals("Position", positionId.toString(), "isOpen", "false");
+  });
+
+  test("Increases Stats on open", () => {
+    openDefaultPosition(); // long
+    openDefaultPosition(); // long
+    openDefaultPosition(false); // short
+
+    assert.entityCount("Position", 3);
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "longCollateral",
+      collateral.times(BigInt.fromI32(2)).toString()
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "shortCollateral",
+      collateral.toString()
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "longShares",
+      shares.times(BigInt.fromI32(2)).toString()
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "shortShares",
+      shares.toString()
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "longPositionCount",
+      "2"
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "shortPositionCount",
+      "1"
+    );
+  });
+
+  test("Decreases Stats on open", () => {
+    openDefaultPosition(); // long
+    let p1 = openDefaultPosition(); // long
+    let p2 = openDefaultPosition(false); // short
+
+    closeDefaultPosition(p1);
+    closeDefaultPosition(p2);
+
+    assert.entityCount("Position", 3);
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "longCollateral",
+      collateral.toString()
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "shortCollateral",
+      "0"
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "longShares",
+      shares.toString()
+    );
+    assert.fieldEquals("TradePair", defaultAddress.toHex(), "shortShares", "0");
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "longPositionCount",
+      "1"
+    );
+    assert.fieldEquals(
+      "TradePair",
+      defaultAddress.toHex(),
+      "shortPositionCount",
+      "0"
+    );
+  });
+
+  test("Logs Protocol Shares", () => {
+    handleProtocolShareTaken(
+      newEvent<ProtocolShareTaken>([
+        ethereum.Value.fromAddress(defaultAddress), // protocol
+        ethereum.Value.fromUnsignedBigInt(shares), // shares
+      ])
+    );
+
+    assert.entityCount("Protocol", 1);
+    assert.fieldEquals(
+      "Protocol",
+      defaultAddress.toHex(),
+      "totalShares",
+      shares.toString()
+    );
+  });
+});

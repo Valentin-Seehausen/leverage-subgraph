@@ -3,6 +3,10 @@
     "TradePair": {
       "address": "0x58FaA4C57137f198381e0eDCB70b884cee0b79D0",
       "startBlock": 3393593
+    },
+    "LiquidityPool": {
+      "address": "0x266951D992Dcb5B4b5554f8B2B8B88E8547e3B76",
+      "startBlock": 3393593
     }
   }
 }

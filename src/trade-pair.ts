@@ -1,110 +1,164 @@
+import { log, BigInt } from "@graphprotocol/graph-ts";
+
 import {
-  ChainlinkAggregatorSet as ChainlinkAggregatorSetEvent,
-  LiquidityPoolSet as LiquidityPoolSetEvent,
   PositionClosed as PositionClosedEvent,
   PositionOpened as PositionOpenedEvent,
   ProtocolSet as ProtocolSetEvent,
-  ProtocolShareTaken as ProtocolShareTakenEvent
-} from "../generated/TradePair/TradePair"
+  LiquidityPoolSet as LiquidityPoolSetEvent,
+  ProtocolShareTaken as ProtocolShareTakenEvent,
+} from "../generated/TradePair/TradePair";
+import { Position, Protocol, TradePair, Trader } from "../generated/schema";
 import {
-  ChainlinkAggregatorSet,
-  LiquidityPoolSet,
-  PositionClosed,
-  PositionOpened,
-  ProtocolSet,
-  ProtocolShareTaken
-} from "../generated/schema"
+  getLiquidityPool,
+  removeOpenInterestFromLiquidityPool,
+} from "./liquidity-pool";
 
-export function handleChainlinkAggregatorSet(
-  event: ChainlinkAggregatorSetEvent
-): void {
-  let entity = new ChainlinkAggregatorSet(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.aggregator = event.params.aggregator
+export function getTrader(id: string): Trader {
+  let trader = Trader.load(id);
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+  if (trader == null) {
+    trader = new Trader(id);
+    trader.save();
+  }
 
-  entity.save()
+  return trader as Trader;
 }
 
-export function handleLiquidityPoolSet(event: LiquidityPoolSetEvent): void {
-  let entity = new LiquidityPoolSet(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.liquidityPool = event.params.liquidityPool
+export function getPosition(id: string): Position {
+  let position = Position.load(id);
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+  if (position == null) {
+    position = new Position(id);
+  }
 
-  entity.save()
+  return position as Position;
+}
+
+export function getTradePair(id: string): TradePair {
+  let tradePair = TradePair.load(id);
+
+  if (tradePair == null) {
+    tradePair = new TradePair(id);
+    tradePair.longCollateral = BigInt.fromI32(0);
+    tradePair.shortCollateral = BigInt.fromI32(0);
+    tradePair.longShares = BigInt.fromI32(0);
+    tradePair.shortShares = BigInt.fromI32(0);
+    tradePair.longPositionCount = BigInt.fromI32(0);
+    tradePair.shortPositionCount = BigInt.fromI32(0);
+  }
+
+  return tradePair as TradePair;
+}
+
+export function getProtocol(id: string): Protocol {
+  let protocol = Protocol.load(id);
+
+  if (protocol == null) {
+    protocol = new Protocol(id);
+    protocol.totalShares = BigInt.fromI32(0);
+  }
+
+  protocol.save();
+  return protocol as Protocol;
+}
+
+export function addStatsToTradePair(
+  tradePairId: string,
+  collateral: BigInt,
+  shares: BigInt,
+  isLong: boolean
+): void {
+  let tradePair = getTradePair(tradePairId);
+
+  // Is position opened or closed?
+  let countDirection = collateral.gt(BigInt.fromI32(0))
+    ? BigInt.fromI32(1)
+    : BigInt.fromI32(-1);
+
+  if (isLong) {
+    tradePair.longCollateral = tradePair.longCollateral.plus(collateral);
+    tradePair.longShares = tradePair.longShares.plus(shares);
+    tradePair.longPositionCount = tradePair.longPositionCount.plus(
+      countDirection
+    );
+  } else {
+    tradePair.shortCollateral = tradePair.shortCollateral.plus(collateral);
+    tradePair.shortShares = tradePair.shortShares.plus(shares);
+    tradePair.shortPositionCount = tradePair.shortPositionCount.plus(
+      countDirection
+    );
+  }
+  tradePair.save();
 }
 
 export function handlePositionClosed(event: PositionClosedEvent): void {
-  let entity = new PositionClosed(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.trader = event.params.trader
-  entity.positionId = event.params.positionId
-  entity.closePrice = event.params.closePrice
-  entity.closeDate = event.params.closeDate
-  entity.pnl = event.params.pnl
+  let position = getPosition(event.params.positionId.toString());
+  let tradePair = getTradePair(event.address.toHex());
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+  position.closePrice = event.params.closePrice;
+  position.closeDate = event.params.closeDate;
+  position.pnl = event.params.pnl;
+  position.closeTransactionHash = event.transaction.hash;
+  position.isOpen = false;
+  position.save();
 
-  entity.save()
+  addStatsToTradePair(
+    event.address.toHex(),
+    position.collateral.neg(),
+    position.shares.neg(),
+    position.isLong
+  );
+
+  removeOpenInterestFromLiquidityPool(
+    tradePair.liquidityPool,
+    position.shares.times(BigInt.fromI32(2))
+  );
 }
 
 export function handlePositionOpened(event: PositionOpenedEvent): void {
-  let entity = new PositionOpened(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.trader = event.params.trader
-  entity.positionId = event.params.positionId
-  entity.collateral = event.params.collateral
-  entity.shares = event.params.shares
-  entity.leverage = event.params.leverage
-  entity.isLong = event.params.isLong
-  entity.entryPrice = event.params.entryPrice
-  entity.liquidationPrice = event.params.liquidationPrice
-  entity.takeProfitPrice = event.params.takeProfitPrice
-  entity.openDate = event.params.openDate
+  log.info("handlePositionOpened", []);
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+  let position = getPosition(event.params.positionId.toString());
 
-  entity.save()
+  position.trader = getTrader(event.params.trader.toHex()).id;
+  position.collateral = event.params.collateral;
+  position.shares = event.params.shares;
+  position.leverage = event.params.leverage;
+  position.isLong = event.params.isLong;
+  position.entryPrice = event.params.entryPrice;
+  position.liquidationPrice = event.params.liquidationPrice;
+  position.takeProfitPrice = event.params.takeProfitPrice;
+  position.openDate = event.params.openDate;
+  position.openTransactionHash = event.transaction.hash;
+  position.isOpen = true;
+
+  position.save();
+
+  addStatsToTradePair(
+    event.address.toHex(),
+    event.params.collateral,
+    event.params.shares,
+    event.params.isLong
+  );
 }
 
 export function handleProtocolSet(event: ProtocolSetEvent): void {
-  let entity = new ProtocolSet(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.protocol = event.params.protocol
+  let protocol = getProtocol(event.params.protocol.toHex());
+  let tradePair = getTradePair(event.address.toHex());
+  tradePair.protocol = protocol.id;
+  tradePair.save();
+}
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+export function handleLiquidityPoolSet(event: LiquidityPoolSetEvent): void {
+  let liquidityPool = getLiquidityPool(event.params.liquidityPool.toHex());
+  let tradePair = getTradePair(event.address.toHex());
+  tradePair.liquidityPool = liquidityPool.id;
+  tradePair.save();
 }
 
 export function handleProtocolShareTaken(event: ProtocolShareTakenEvent): void {
-  let entity = new ProtocolShareTaken(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.protocol = event.params.protocol
-  entity.protocolShare = event.params.protocolShare
+  let protocol = getProtocol(event.address.toHex());
+  protocol.totalShares = protocol.totalShares.plus(event.params.protocolShare);
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+  protocol.save();
 }
