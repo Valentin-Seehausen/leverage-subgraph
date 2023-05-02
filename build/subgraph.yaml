@@ -6,7 +6,7 @@ dataSources:
     name: TradePair
     network: sepolia
     source:
-      address: "0x58FaA4C57137f198381e0eDCB70b884cee0b79D0"
+      address: "0x7993E8565870CCE53Bd031bA064B228B90DEe57d"
       abi: TradePair
       startBlock: 3393593
     mapping:
@@ -40,7 +40,7 @@ dataSources:
     name: LiquidityPool
     network: sepolia
     source:
-      address: "0x266951D992Dcb5B4b5554f8B2B8B88E8547e3B76"
+      address: "0x180d9fa830edb33170470b160C83005e68BA4864"
       abi: LiquidityPool
       startBlock: 3393593
     mapping:
