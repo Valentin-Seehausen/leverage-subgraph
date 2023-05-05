@@ -230,4 +230,35 @@ describe("TradePair Tests", () => {
       shares.toString()
     );
   });
+
+  test("Min and Max closing price", () => {
+    let positionIdLong = openDefaultPosition().toString();
+    let positionIdShort = openDefaultPosition(false).toString();
+
+    assert.fieldEquals(
+      "Position",
+      positionIdLong,
+      "minClosePrice",
+      liquidationPrice.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionIdLong,
+      "maxClosePrice",
+      takeProfitPrice.toString()
+    );
+
+    assert.fieldEquals(
+      "Position",
+      positionIdShort,
+      "minClosePrice",
+      takeProfitPrice.toString()
+    );
+    assert.fieldEquals(
+      "Position",
+      positionIdShort,
+      "maxClosePrice",
+      liquidationPrice.toString()
+    );
+  });
 });

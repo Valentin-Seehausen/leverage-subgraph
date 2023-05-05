@@ -1,12 +1,12 @@
 {
   "name": "p2p-leverage-operations",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ p2p-leverage-operations",
-    "fresh-deploy": "graph codegen && graph build && graph deploy --node https://api.studio.thegraph.com/deploy/ p2p-leverage-operations",
+    "deploy-fresh": "graph codegen && graph build && graph deploy --node https://api.studio.thegraph.com/deploy/ p2p-leverage-operations",
     "create-local": "graph create --node http://localhost:8020/ p2p-leverage-operations",
     "remove-local": "graph remove --node http://localhost:8020/ p2p-leverage-operations",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 p2p-leverage-operations",

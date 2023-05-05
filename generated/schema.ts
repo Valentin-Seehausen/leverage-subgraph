@@ -150,6 +150,32 @@ export class Position extends Entity {
     this.set("takeProfitPrice", Value.fromBigInt(value));
   }
 
+  get minClosePrice(): BigInt {
+    let value = this.get("minClosePrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set minClosePrice(value: BigInt) {
+    this.set("minClosePrice", Value.fromBigInt(value));
+  }
+
+  get maxClosePrice(): BigInt {
+    let value = this.get("maxClosePrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set maxClosePrice(value: BigInt) {
+    this.set("maxClosePrice", Value.fromBigInt(value));
+  }
+
   get openDate(): BigInt {
     let value = this.get("openDate");
     if (!value || value.kind == ValueKind.NULL) {

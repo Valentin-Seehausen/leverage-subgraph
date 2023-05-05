@@ -8,6 +8,8 @@ type Position @entity {
   entryPrice: BigInt! # uint256
   liquidationPrice: BigInt! # uint256
   takeProfitPrice: BigInt! # uint256
+  minClosePrice: BigInt! # uint256
+  maxClosePrice: BigInt! # uint256
   openDate: BigInt! # uint256
   openTransactionHash: Bytes!
   closePrice: BigInt # uint256
