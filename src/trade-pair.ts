@@ -128,6 +128,12 @@ export function handlePositionOpened(event: PositionOpenedEvent): void {
   position.entryPrice = event.params.entryPrice;
   position.liquidationPrice = event.params.liquidationPrice;
   position.takeProfitPrice = event.params.takeProfitPrice;
+  position.minClosePrice = position.isLong
+    ? position.liquidationPrice
+    : position.takeProfitPrice;
+  position.maxClosePrice = position.isLong
+    ? position.takeProfitPrice
+    : position.liquidationPrice;
   position.openDate = event.params.openDate;
   position.openTransactionHash = event.transaction.hash;
   position.isOpen = true;
