@@ -20,8 +20,9 @@ type Position @entity {
   closeDate: BigInt 
   closeTransactionHash: Bytes
   pnlAssets: BigInt 
-  pnlShares: BigInt 
   pnlAssetsPercentage: BigDecimal
+  pnlShares: BigInt 
+  pnlSharesPercentage: BigDecimal 
 }
 
 type Trader @entity {

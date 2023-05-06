@@ -52,14 +52,17 @@ export function openDefaultPosition(isLong_: boolean = isLong): BigInt {
   return positionCounter;
 }
 
-export function closeDefaultPosition(positionId_: BigInt = positionId): void {
+export function closeDefaultPosition(
+  positionId_: BigInt = positionId,
+  profit: bool = true
+): void {
   handlePositionClosed(
     newEvent<PositionClosed>([
       ethereum.Value.fromAddress(defaultAddress), // trader
       ethereum.Value.fromUnsignedBigInt(positionId_), // positionId
       ethereum.Value.fromUnsignedBigInt(closePrice), // closePrice
       ethereum.Value.fromUnsignedBigInt(closeDate), // closeDate
-      ethereum.Value.fromUnsignedBigInt(pnlShares), // pnlShares
+      ethereum.Value.fromUnsignedBigInt(profit ? pnlShares : BigInt.fromI32(0)), // pnlShares
     ])
   );
 }

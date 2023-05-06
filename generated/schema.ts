@@ -283,6 +283,23 @@ export class Position extends Entity {
     }
   }
 
+  get pnlAssetsPercentage(): BigDecimal | null {
+    let value = this.get("pnlAssetsPercentage");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set pnlAssetsPercentage(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("pnlAssetsPercentage");
+    } else {
+      this.set("pnlAssetsPercentage", Value.fromBigDecimal(<BigDecimal>value));
+    }
+  }
+
   get pnlShares(): BigInt | null {
     let value = this.get("pnlShares");
     if (!value || value.kind == ValueKind.NULL) {
@@ -300,8 +317,8 @@ export class Position extends Entity {
     }
   }
 
-  get pnlAssetsPercentage(): BigDecimal | null {
-    let value = this.get("pnlAssetsPercentage");
+  get pnlSharesPercentage(): BigDecimal | null {
+    let value = this.get("pnlSharesPercentage");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -309,11 +326,11 @@ export class Position extends Entity {
     }
   }
 
-  set pnlAssetsPercentage(value: BigDecimal | null) {
+  set pnlSharesPercentage(value: BigDecimal | null) {
     if (!value) {
-      this.unset("pnlAssetsPercentage");
+      this.unset("pnlSharesPercentage");
     } else {
-      this.set("pnlAssetsPercentage", Value.fromBigDecimal(<BigDecimal>value));
+      this.set("pnlSharesPercentage", Value.fromBigDecimal(<BigDecimal>value));
     }
   }
 }

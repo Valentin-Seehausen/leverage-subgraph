@@ -294,6 +294,7 @@ describe("TradePair Tests", () => {
       collateral.div(BigInt.fromI32(2)).toString() // half of collateral, as no other liquidity is added
     );
     assert.fieldEquals("Position", p1.toString(), "pnlAssetsPercentage", "50");
+    assert.fieldEquals("Position", p1.toString(), "pnlSharesPercentage", "100");
   });
 
   test("pnl shares and assets after second deposit", () => {
@@ -319,6 +320,7 @@ describe("TradePair Tests", () => {
       collateral.div(BigInt.fromI32(2)).toString() // half of collateral, as ratio is the same
     );
     assert.fieldEquals("Position", p1.toString(), "pnlAssetsPercentage", "50");
+    assert.fieldEquals("Position", p1.toString(), "pnlSharesPercentage", "100");
   });
 
   test("pnl shares and assets after burn", () => {
@@ -344,5 +346,42 @@ describe("TradePair Tests", () => {
       collateral.toString() // all of collateral
     );
     assert.fieldEquals("Position", p1.toString(), "pnlAssetsPercentage", "100");
+    assert.fieldEquals("Position", p1.toString(), "pnlSharesPercentage", "100");
+  });
+
+  test("Loss Position", () => {
+    handleLiquidityPoolSet(createLiquidityPoolSetEvent(liquidityPoolAddress));
+
+    let p1 = openDefaultPosition();
+    handleDeposit(createDepositEvent(liquidityPoolAddress, collateral, shares));
+
+    // Burn half of the shares
+    // handleTransfer(createTransferEvent(defaultAddress, ZERO_ADDRESS, shares));
+    closeDefaultPosition(p1, false);
+
+    assert.fieldEquals(
+      "Position",
+      p1.toString(),
+      "pnlShares",
+      shares.neg().toString() // shares at entry
+    );
+    assert.fieldEquals(
+      "Position",
+      p1.toString(),
+      "pnlAssets",
+      collateral.neg().toString() // all of collateral
+    );
+    assert.fieldEquals(
+      "Position",
+      p1.toString(),
+      "pnlAssetsPercentage",
+      "-100"
+    );
+    assert.fieldEquals(
+      "Position",
+      p1.toString(),
+      "pnlSharesPercentage",
+      "-100"
+    );
   });
 });
