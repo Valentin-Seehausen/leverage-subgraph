@@ -162,13 +162,13 @@ describe("TradePair Tests", () => {
       "TradePair",
       defaultAddress.toHex(),
       "longShares",
-      shares.times(BigInt.fromI32(2)).toString()
+      shares.times(BigInt.fromI32(4)).toString()
     );
     assert.fieldEquals(
       "TradePair",
       defaultAddress.toHex(),
       "shortShares",
-      shares.toString()
+      shares.times(BigInt.fromI32(2)).toString()
     );
     assert.fieldEquals(
       "TradePair",
@@ -209,7 +209,7 @@ describe("TradePair Tests", () => {
       "TradePair",
       defaultAddress.toHex(),
       "longShares",
-      shares.toString()
+      shares.times(BigInt.fromI32(2)).toString()
     );
     assert.fieldEquals("TradePair", defaultAddress.toHex(), "shortShares", "0");
     assert.fieldEquals(

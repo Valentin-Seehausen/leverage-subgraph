@@ -120,7 +120,7 @@ export function handlePositionOpened(event: PositionOpenedEvent): void {
   addStatsToTradePair(
     event.address.toHex(),
     event.params.collateral,
-    event.params.shares,
+    event.params.shares.times(BigInt.fromI32(2)),
     event.params.isLong
   );
 }
@@ -164,7 +164,7 @@ export function handlePositionClosed(event: PositionClosedEvent): void {
   addStatsToTradePair(
     event.address.toHex(),
     position.collateral.neg(),
-    position.shares.neg(),
+    position.shares.times(BigInt.fromI32(2)).neg(),
     position.isLong
   );
 
