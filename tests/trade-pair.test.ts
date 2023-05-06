@@ -4,7 +4,6 @@ import {
   test,
   clearStore,
   afterEach,
-  logStore,
 } from "matchstick-as/assembly/index";
 import { BigInt, ethereum } from "@graphprotocol/graph-ts";
 import {
@@ -282,8 +281,6 @@ describe("TradePair Tests", () => {
     handleDeposit(createDepositEvent(liquidityPoolAddress, collateral, shares));
     closeDefaultPosition(p1);
 
-    logStore();
-
     assert.fieldEquals(
       "Position",
       p1.toString(),
@@ -296,6 +293,7 @@ describe("TradePair Tests", () => {
       "pnlAssets",
       collateral.div(BigInt.fromI32(2)).toString() // half of collateral, as no other liquidity is added
     );
+    assert.fieldEquals("Position", p1.toString(), "pnlAssetsPercentage", "50");
   });
 
   test("pnl shares and assets after second deposit", () => {
@@ -307,8 +305,6 @@ describe("TradePair Tests", () => {
     // Another position
     handleDeposit(createDepositEvent(liquidityPoolAddress, collateral, shares));
     closeDefaultPosition(p1);
-
-    logStore();
 
     assert.fieldEquals(
       "Position",
@@ -322,6 +318,7 @@ describe("TradePair Tests", () => {
       "pnlAssets",
       collateral.div(BigInt.fromI32(2)).toString() // half of collateral, as ratio is the same
     );
+    assert.fieldEquals("Position", p1.toString(), "pnlAssetsPercentage", "50");
   });
 
   test("pnl shares and assets after burn", () => {
@@ -333,8 +330,6 @@ describe("TradePair Tests", () => {
     // Burn half of the shares
     handleTransfer(createTransferEvent(defaultAddress, ZERO_ADDRESS, shares));
     closeDefaultPosition(p1);
-
-    logStore();
 
     assert.fieldEquals(
       "Position",
@@ -348,5 +343,6 @@ describe("TradePair Tests", () => {
       "pnlAssets",
       collateral.toString() // all of collateral
     );
+    assert.fieldEquals("Position", p1.toString(), "pnlAssetsPercentage", "100");
   });
 });

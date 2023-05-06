@@ -59,6 +59,45 @@ export class Position extends Entity {
     this.set("trader", Value.fromString(value));
   }
 
+  get isOpen(): boolean {
+    let value = this.get("isOpen");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set isOpen(value: boolean) {
+    this.set("isOpen", Value.fromBoolean(value));
+  }
+
+  get isLong(): boolean {
+    let value = this.get("isLong");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set isLong(value: boolean) {
+    this.set("isLong", Value.fromBoolean(value));
+  }
+
+  get leverage(): BigInt {
+    let value = this.get("leverage");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set leverage(value: BigInt) {
+    this.set("leverage", Value.fromBigInt(value));
+  }
+
   get collateral(): BigInt {
     let value = this.get("collateral");
     if (!value || value.kind == ValueKind.NULL) {
@@ -83,32 +122,6 @@ export class Position extends Entity {
 
   set shares(value: BigInt) {
     this.set("shares", Value.fromBigInt(value));
-  }
-
-  get leverage(): BigInt {
-    let value = this.get("leverage");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set leverage(value: BigInt) {
-    this.set("leverage", Value.fromBigInt(value));
-  }
-
-  get isLong(): boolean {
-    let value = this.get("isLong");
-    if (!value || value.kind == ValueKind.NULL) {
-      return false;
-    } else {
-      return value.toBoolean();
-    }
-  }
-
-  set isLong(value: boolean) {
-    this.set("isLong", Value.fromBoolean(value));
   }
 
   get entryPrice(): BigInt {
@@ -176,6 +189,23 @@ export class Position extends Entity {
     this.set("maxClosePrice", Value.fromBigInt(value));
   }
 
+  get closePrice(): BigInt | null {
+    let value = this.get("closePrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set closePrice(value: BigInt | null) {
+    if (!value) {
+      this.unset("closePrice");
+    } else {
+      this.set("closePrice", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
   get openDate(): BigInt {
     let value = this.get("openDate");
     if (!value || value.kind == ValueKind.NULL) {
@@ -200,23 +230,6 @@ export class Position extends Entity {
 
   set openTransactionHash(value: Bytes) {
     this.set("openTransactionHash", Value.fromBytes(value));
-  }
-
-  get closePrice(): BigInt | null {
-    let value = this.get("closePrice");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set closePrice(value: BigInt | null) {
-    if (!value) {
-      this.unset("closePrice");
-    } else {
-      this.set("closePrice", Value.fromBigInt(<BigInt>value));
-    }
   }
 
   get closeDate(): BigInt | null {
@@ -287,17 +300,21 @@ export class Position extends Entity {
     }
   }
 
-  get isOpen(): boolean {
-    let value = this.get("isOpen");
+  get pnlAssetsPercentage(): BigDecimal | null {
+    let value = this.get("pnlAssetsPercentage");
     if (!value || value.kind == ValueKind.NULL) {
-      return false;
+      return null;
     } else {
-      return value.toBoolean();
+      return value.toBigDecimal();
     }
   }
 
-  set isOpen(value: boolean) {
-    this.set("isOpen", Value.fromBoolean(value));
+  set pnlAssetsPercentage(value: BigDecimal | null) {
+    if (!value) {
+      this.unset("pnlAssetsPercentage");
+    } else {
+      this.set("pnlAssetsPercentage", Value.fromBigDecimal(<BigDecimal>value));
+    }
   }
 }
 

@@ -1,4 +1,4 @@
-import { log, BigInt } from "@graphprotocol/graph-ts";
+import { log, BigInt, BigDecimal } from "@graphprotocol/graph-ts";
 
 import {
   PositionClosed as PositionClosedEvent,
@@ -100,6 +100,10 @@ export function handlePositionClosed(event: PositionClosedEvent): void {
   position.closeDate = event.params.closeDate;
   position.pnlShares = event.params.pnl;
   position.pnlAssets = previewRedeem(tradePair.liquidityPool, event.params.pnl);
+  position.pnlAssetsPercentage = position
+    .pnlAssets!.toBigDecimal()
+    .times(BigDecimal.fromString("100"))
+    .div(position.collateral.toBigDecimal());
   position.closeTransactionHash = event.transaction.hash;
   position.isOpen = false;
   position.save();
