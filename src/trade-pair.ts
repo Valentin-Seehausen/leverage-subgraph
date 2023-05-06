@@ -10,6 +10,7 @@ import {
 import { Position, Protocol, TradePair, Trader } from "../generated/schema";
 import {
   getLiquidityPool,
+  previewRedeem,
   removeOpenInterestFromLiquidityPool,
 } from "./liquidity-pool";
 
@@ -97,7 +98,8 @@ export function handlePositionClosed(event: PositionClosedEvent): void {
 
   position.closePrice = event.params.closePrice;
   position.closeDate = event.params.closeDate;
-  position.pnl = event.params.pnl;
+  position.pnlShares = event.params.pnl;
+  position.pnlAssets = previewRedeem(tradePair.liquidityPool, event.params.pnl);
   position.closeTransactionHash = event.transaction.hash;
   position.isOpen = false;
   position.save();

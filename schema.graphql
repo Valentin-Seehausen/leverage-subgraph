@@ -15,7 +15,8 @@ type Position @entity {
   closePrice: BigInt # uint256
   closeDate: BigInt # uint256
   closeTransactionHash: Bytes
-  pnl: BigInt # int256
+  pnlAssets: BigInt # int256
+  pnlShares: BigInt # int256
   isOpen: Boolean! 
 }
 

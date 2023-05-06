@@ -253,8 +253,8 @@ export class Position extends Entity {
     }
   }
 
-  get pnl(): BigInt | null {
-    let value = this.get("pnl");
+  get pnlAssets(): BigInt | null {
+    let value = this.get("pnlAssets");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -262,11 +262,28 @@ export class Position extends Entity {
     }
   }
 
-  set pnl(value: BigInt | null) {
+  set pnlAssets(value: BigInt | null) {
     if (!value) {
-      this.unset("pnl");
+      this.unset("pnlAssets");
     } else {
-      this.set("pnl", Value.fromBigInt(<BigInt>value));
+      this.set("pnlAssets", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get pnlShares(): BigInt | null {
+    let value = this.get("pnlShares");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set pnlShares(value: BigInt | null) {
+    if (!value) {
+      this.unset("pnlShares");
+    } else {
+      this.set("pnlShares", Value.fromBigInt(<BigInt>value));
     }
   }
 

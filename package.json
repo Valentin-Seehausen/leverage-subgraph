@@ -4,7 +4,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
-    "build": "graph build",
+    "build": "graph codegen && graph build",
     "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ p2p-leverage-operations",
     "deploy-fresh": "graph codegen && graph build && graph deploy --node https://api.studio.thegraph.com/deploy/ p2p-leverage-operations",
     "create-local": "graph create --node http://localhost:8020/ p2p-leverage-operations",

@@ -12,10 +12,10 @@ import {
 
 export let shares = BigInt.fromI32(1_000_000_000);
 export let assets = BigInt.fromI32(1_000_000);
-export let liquidityPool = Address.fromString(
+export let liquidityPoolAddress = Address.fromString(
   "0x000000000000000000000000000000000000000b"
 );
-export let protocol = Address.fromString(
+export let protocolAddress = Address.fromString(
   "0x000000000000000000000000000000000000000c"
 );
 
@@ -38,7 +38,7 @@ export function createApprovalEvent(
     new ethereum.EventParam("value", ethereum.Value.fromUnsignedBigInt(value))
   );
 
-  approvalEvent.address = liquidityPool;
+  approvalEvent.address = liquidityPoolAddress;
 
   return approvalEvent;
 }
@@ -62,7 +62,7 @@ export function createDepositEvent(
     new ethereum.EventParam("shares", ethereum.Value.fromUnsignedBigInt(shares))
   );
 
-  depositEvent.address = liquidityPool;
+  depositEvent.address = liquidityPoolAddress;
 
   return depositEvent;
 }
@@ -76,7 +76,7 @@ export function createProtocolSetEvent(protocol: Address): ProtocolSet {
     new ethereum.EventParam("protocol", ethereum.Value.fromAddress(protocol))
   );
 
-  protocolSetEvent.address = liquidityPool;
+  protocolSetEvent.address = liquidityPoolAddress;
 
   return protocolSetEvent;
 }
@@ -107,7 +107,7 @@ export function createRedeemEvent(
     )
   );
 
-  redeemEvent.address = liquidityPool;
+  redeemEvent.address = liquidityPoolAddress;
 
   return redeemEvent;
 }
@@ -121,7 +121,7 @@ export function createTradePairAddedEvent(tradePair: Address): TradePairAdded {
     new ethereum.EventParam("tradePair", ethereum.Value.fromAddress(tradePair))
   );
 
-  tradePairAddedEvent.address = liquidityPool;
+  tradePairAddedEvent.address = liquidityPoolAddress;
 
   return tradePairAddedEvent;
 }
@@ -137,7 +137,7 @@ export function createTradePairRemovedEvent(
     new ethereum.EventParam("tradePair", ethereum.Value.fromAddress(tradePair))
   );
 
-  tradePairRemovedEvent.address = liquidityPool;
+  tradePairRemovedEvent.address = liquidityPoolAddress;
 
   return tradePairRemovedEvent;
 }
@@ -161,7 +161,7 @@ export function createTransferEvent(
     new ethereum.EventParam("value", ethereum.Value.fromUnsignedBigInt(value))
   );
 
-  transferEvent.address = liquidityPool;
+  transferEvent.address = liquidityPoolAddress;
 
   return transferEvent;
 }
