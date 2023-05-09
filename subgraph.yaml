@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: TradePair
-    network: sepolia
+    network: mumbai
     source:
-      address: "0x7993E8565870CCE53Bd031bA064B228B90DEe57d"
       abi: TradePair
-      startBlock: 3393593
+      address: "0x8D56a71aF6109E7Fc94B2fE4b1FFa223D2cB63C9"
+      startBlock: 35382847
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -38,11 +38,11 @@ dataSources:
       file: ./src/trade-pair.ts
   - kind: ethereum
     name: LiquidityPool
-    network: sepolia
+    network: mumbai
     source:
-      address: "0x180d9fa830edb33170470b160C83005e68BA4864"
       abi: LiquidityPool
-      startBlock: 3393593
+      address: "0x402C11286b400F4ce7A9309f484fF31fcbd834A2"
+      startBlock: 35382847
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
