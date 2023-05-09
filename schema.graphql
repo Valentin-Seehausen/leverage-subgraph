@@ -1,22 +1,28 @@
 type Position @entity {
   id: ID! # positionId
   trader: Trader!
-  collateral: BigInt! # uint256
-  shares: BigInt! # uint256
-  leverage: BigInt! # uint256
-  isLong: Boolean! # bool
-  entryPrice: BigInt! # uint256
-  liquidationPrice: BigInt! # uint256
-  takeProfitPrice: BigInt! # uint256
-  minClosePrice: BigInt! # uint256
-  maxClosePrice: BigInt! # uint256
-  openDate: BigInt! # uint256
-  openTransactionHash: Bytes!
-  closePrice: BigInt # uint256
-  closeDate: BigInt # uint256
-  closeTransactionHash: Bytes
-  pnl: BigInt # int256
   isOpen: Boolean! 
+  isLong: Boolean! 
+  leverage: BigInt! 
+  
+  collateral: BigInt! 
+  shares: BigInt! 
+
+  entryPrice: BigInt! 
+  liquidationPrice: BigInt! 
+  takeProfitPrice: BigInt! 
+  minClosePrice: BigInt! 
+  maxClosePrice: BigInt! 
+  closePrice: BigInt 
+
+  openDate: BigInt! 
+  openTransactionHash: Bytes!
+  closeDate: BigInt 
+  closeTransactionHash: Bytes
+  pnlAssets: BigInt 
+  pnlAssetsPercentage: BigDecimal
+  pnlShares: BigInt 
+  pnlSharesPercentage: BigDecimal 
 }
 
 type Trader @entity {
@@ -26,12 +32,12 @@ type Trader @entity {
 
 type TradePair @entity {
   id: ID!
-  longCollateral: BigInt! # uint256
-  shortCollateral: BigInt! # uint256
-  longShares: BigInt! # uint256
-  shortShares: BigInt! # uint256
-  longPositionCount: BigInt! # uint256
-  shortPositionCount: BigInt! # uint256
+  longCollateral: BigInt! 
+  shortCollateral: BigInt! 
+  longShares: BigInt! 
+  shortShares: BigInt! 
+  longPositionCount: BigInt! 
+  shortPositionCount: BigInt! 
 
   protocol: Protocol
   liquidityPool: LiquidityPool
@@ -39,14 +45,14 @@ type TradePair @entity {
 
 type Protocol @entity {
   id: ID!
-  totalShares: BigInt! # uint256
+  totalShares: BigInt! 
 }
 
 type LiquidityPool @entity {
   id: ID!
-  shares: BigInt! # uint256
-  openInterestShares: BigInt! # uint256
-  assets: BigInt! # uint256
+  shares: BigInt! 
+  openInterestShares: BigInt! 
+  assets: BigInt! 
 
   protocol: Protocol
 }

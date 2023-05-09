@@ -89,3 +89,15 @@ export function handleProtocolSet(event: ProtocolSetEvent): void {
   liquidityPool.protocol = protocol.id;
   liquidityPool.save();
 }
+
+export function previewRedeem(
+  liquidityPoolId: string | null,
+  shares: BigInt
+): BigInt {
+  if (liquidityPoolId == null) {
+    return BigInt.fromI32(0);
+  }
+
+  let liquidityPool = getLiquidityPool(liquidityPoolId as string);
+  return liquidityPool.assets.times(shares).div(liquidityPool.shares);
+}

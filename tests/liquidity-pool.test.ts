@@ -19,8 +19,8 @@ import {
   createProtocolSetEvent,
   createRedeemEvent,
   createTransferEvent,
-  liquidityPool,
-  protocol,
+  liquidityPoolAddress,
+  protocolAddress,
 } from "./liquidity-pool-utils";
 import { defaultAddress, newEvent } from "./utils/event.utils";
 import {
@@ -35,7 +35,7 @@ import { LiquidityPoolSet } from "../generated/TradePair/TradePair";
 // Tests structure (matchstick-as >=0.5.0)
 // https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0
 
-describe("Describe entity assertions", () => {
+describe("LiquidityPool Tests", () => {
   beforeAll(() => {});
 
   afterEach(() => {
@@ -49,19 +49,19 @@ describe("Describe entity assertions", () => {
 
     assert.fieldEquals(
       "LiquidityPool",
-      liquidityPool.toHex(),
+      liquidityPoolAddress.toHex(),
       "shares",
       shares.times(BigInt.fromI32(2)).toString()
     );
     assert.fieldEquals(
       "LiquidityPool",
-      liquidityPool.toHex(),
+      liquidityPoolAddress.toHex(),
       "openInterestShares",
       shares.times(BigInt.fromI32(2)).toString()
     );
     assert.fieldEquals(
       "LiquidityPool",
-      liquidityPool.toHex(),
+      liquidityPoolAddress.toHex(),
       "assets",
       collateral.toString()
     );
@@ -73,19 +73,19 @@ describe("Describe entity assertions", () => {
 
     assert.fieldEquals(
       "LiquidityPool",
-      liquidityPool.toHex(),
+      liquidityPoolAddress.toHex(),
       "shares",
       shares.toString()
     );
     assert.fieldEquals(
       "LiquidityPool",
-      liquidityPool.toHex(),
+      liquidityPoolAddress.toHex(),
       "openInterestShares",
       shares.times(BigInt.fromI32(2)).toString()
     );
     assert.fieldEquals(
       "LiquidityPool",
-      liquidityPool.toHex(),
+      liquidityPoolAddress.toHex(),
       "assets",
       collateral.toString()
     );
@@ -94,7 +94,9 @@ describe("Describe entity assertions", () => {
   test("Realized Profit", () => {
     // set liquidityPool
     handleLiquidityPoolSet(
-      newEvent<LiquidityPoolSet>([ethereum.Value.fromAddress(liquidityPool)])
+      newEvent<LiquidityPoolSet>([
+        ethereum.Value.fromAddress(liquidityPoolAddress),
+      ])
     );
 
     let positionId = openDefaultPosition();
@@ -103,26 +105,26 @@ describe("Describe entity assertions", () => {
 
     assert.fieldEquals(
       "LiquidityPool",
-      liquidityPool.toHex(),
+      liquidityPoolAddress.toHex(),
       "shares",
       shares.times(BigInt.fromI32(2)).toString()
     );
     assert.fieldEquals(
       "LiquidityPool",
-      liquidityPool.toHex(),
+      liquidityPoolAddress.toHex(),
       "openInterestShares",
       "0"
     );
     assert.fieldEquals(
       "LiquidityPool",
-      liquidityPool.toHex(),
+      liquidityPoolAddress.toHex(),
       "assets",
       collateral.toString()
     );
   });
 
   test("Redeem", () => {
-    handleProtocolSet(createProtocolSetEvent(protocol));
+    handleProtocolSet(createProtocolSetEvent(protocolAddress));
     handleDeposit(createDepositEvent(defaultAddress, collateral, shares));
     handleRedeem(
       createRedeemEvent(
@@ -135,19 +137,19 @@ describe("Describe entity assertions", () => {
 
     assert.fieldEquals(
       "LiquidityPool",
-      liquidityPool.toHex(),
+      liquidityPoolAddress.toHex(),
       "shares",
       shares.toString()
     );
     assert.fieldEquals(
       "LiquidityPool",
-      liquidityPool.toHex(),
+      liquidityPoolAddress.toHex(),
       "assets",
       collateral.div(BigInt.fromI32(2)).toString()
     );
     assert.fieldEquals(
       "Protocol",
-      protocol.toHex(),
+      protocolAddress.toHex(),
       "totalShares",
       shares.toString()
     );
