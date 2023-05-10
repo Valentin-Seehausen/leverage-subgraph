@@ -11,12 +11,12 @@
   },
   "mumbai": {
     "TradePair": {
-      "address": "0x8D56a71aF6109E7Fc94B2fE4b1FFa223D2cB63C9",
-      "startBlock": 35382847
+      "address": "0xDE2052ac3388Ee9d8813B83b68E8dDb78448931c",
+      "startBlock": 35426283
     },
     "LiquidityPool": {
-      "address": "0x402C11286b400F4ce7A9309f484fF31fcbd834A2",
-      "startBlock": 35382847
+      "address": "0x5CECF3A137d4b3F9a7ea255836b01Ef7b02b8d36",
+      "startBlock": 35426283
     }
   }
 }

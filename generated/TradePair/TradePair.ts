@@ -78,6 +78,10 @@ export class PositionClosed__Params {
   get pnlShares(): BigInt {
     return this._event.parameters[4].value.toBigInt();
   }
+
+  get isLong(): boolean {
+    return this._event.parameters[5].value.toBoolean();
+  }
 }
 
 export class PositionOpened extends ethereum.Event {

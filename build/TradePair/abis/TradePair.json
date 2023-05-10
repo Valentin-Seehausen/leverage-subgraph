@@ -78,6 +78,12 @@
         "internalType": "int256",
         "name": "pnlShares",
         "type": "int256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isLong",
+        "type": "bool"
       }
     ],
     "name": "PositionClosed",
