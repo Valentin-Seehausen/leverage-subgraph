@@ -67,20 +67,32 @@ export class PositionClosed__Params {
     return this._event.parameters[1].value.toBigInt();
   }
 
-  get closePrice(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+  get isLong(): boolean {
+    return this._event.parameters[2].value.toBoolean();
   }
 
-  get closeDate(): BigInt {
+  get shares(): BigInt {
     return this._event.parameters[3].value.toBigInt();
   }
 
-  get pnlShares(): BigInt {
+  get entryPrice(): BigInt {
     return this._event.parameters[4].value.toBigInt();
   }
 
-  get isLong(): boolean {
-    return this._event.parameters[5].value.toBoolean();
+  get leverage(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get pnlShares(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
+  }
+
+  get closePrice(): BigInt {
+    return this._event.parameters[7].value.toBigInt();
+  }
+
+  get closeDate(): BigInt {
+    return this._event.parameters[8].value.toBigInt();
   }
 }
 

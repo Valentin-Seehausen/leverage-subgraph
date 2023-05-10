@@ -57,13 +57,17 @@ export function closeDefaultPosition(
   profit: bool = true
 ): void {
   handlePositionClosed(
-    newEvent<PositionClosed>([
-      ethereum.Value.fromAddress(defaultAddress), // trader
-      ethereum.Value.fromUnsignedBigInt(positionId_), // positionId
-      ethereum.Value.fromUnsignedBigInt(closePrice), // closePrice
-      ethereum.Value.fromUnsignedBigInt(closeDate), // closeDate
-      ethereum.Value.fromUnsignedBigInt(profit ? pnlShares : BigInt.fromI32(0)), // pnlShares
-    ])
+    createPositionClosedEvent(
+      defaultAddress,
+      positionId_,
+      isLong,
+      shares,
+      entryPrice,
+      leverage,
+      profit ? pnlShares : BigInt.fromI32(0),
+      closePrice,
+      closeDate
+    )
   );
 }
 
@@ -106,9 +110,13 @@ export function createLiquidityPoolSetEvent(
 export function createPositionClosedEvent(
   trader: Address,
   positionId: BigInt,
+  isLong: boolean,
+  shares: BigInt,
+  entryPrice: BigInt,
+  leverage: BigInt,
+  pnlShares: BigInt,
   closePrice: BigInt,
-  closeDate: BigInt,
-  pnl: BigInt
+  closeDate: BigInt
 ): PositionClosed {
   let positionClosedEvent = changetype<PositionClosed>(newMockEvent());
 
@@ -124,6 +132,30 @@ export function createPositionClosedEvent(
     )
   );
   positionClosedEvent.parameters.push(
+    new ethereum.EventParam("isLong", ethereum.Value.fromBoolean(isLong))
+  );
+  positionClosedEvent.parameters.push(
+    new ethereum.EventParam("shares", ethereum.Value.fromUnsignedBigInt(shares))
+  );
+  positionClosedEvent.parameters.push(
+    new ethereum.EventParam(
+      "entryPrice",
+      ethereum.Value.fromUnsignedBigInt(entryPrice)
+    )
+  );
+  positionClosedEvent.parameters.push(
+    new ethereum.EventParam(
+      "leverage",
+      ethereum.Value.fromUnsignedBigInt(leverage)
+    )
+  );
+  positionClosedEvent.parameters.push(
+    new ethereum.EventParam(
+      "pnlShares",
+      ethereum.Value.fromSignedBigInt(pnlShares)
+    )
+  );
+  positionClosedEvent.parameters.push(
     new ethereum.EventParam(
       "closePrice",
       ethereum.Value.fromUnsignedBigInt(closePrice)
@@ -134,9 +166,6 @@ export function createPositionClosedEvent(
       "closeDate",
       ethereum.Value.fromUnsignedBigInt(closeDate)
     )
-  );
-  positionClosedEvent.parameters.push(
-    new ethereum.EventParam("pnl", ethereum.Value.fromSignedBigInt(pnl))
   );
 
   return positionClosedEvent;

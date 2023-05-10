@@ -24,6 +24,7 @@ import {
   closePrice,
   collateral,
   createLiquidityPoolSetEvent,
+  createPositionClosedEvent,
   entryPrice,
   isLong,
   leverage,
@@ -96,13 +97,17 @@ describe("TradePair Tests", () => {
     let positionId = openDefaultPosition();
 
     handlePositionClosed(
-      newEvent<PositionClosed>([
-        ethereum.Value.fromAddress(defaultAddress), // trader
-        ethereum.Value.fromUnsignedBigInt(positionId), // positionId
-        ethereum.Value.fromUnsignedBigInt(closePrice), // closePrice
-        ethereum.Value.fromUnsignedBigInt(closeDate), // closeDate
-        ethereum.Value.fromUnsignedBigInt(pnlShares), // pnlShares
-      ])
+      createPositionClosedEvent(
+        defaultAddress,
+        positionId,
+        isLong,
+        shares,
+        entryPrice,
+        leverage,
+        pnlShares,
+        closePrice,
+        closeDate
+      )
     );
 
     assert.entityCount("Position", 1);

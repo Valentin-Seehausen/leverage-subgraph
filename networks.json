@@ -11,12 +11,15 @@
   },
   "mumbai": {
     "TradePair": {
-      "address": "0xDE2052ac3388Ee9d8813B83b68E8dDb78448931c",
-      "startBlock": 35426283
+      "address": "0x4A1f483282154c0b8A4CAeACFB4c720c67fdFb11",
+      "startBlock": 35426987
     },
     "LiquidityPool": {
-      "address": "0x5CECF3A137d4b3F9a7ea255836b01Ef7b02b8d36",
-      "startBlock": 35426283
+      "address": "0xe972E9ae95EadfB997E96520341AC24426b29e21",
+      "startBlock": 35426987
+    },
+    "Contract": {
+      "address": "0x4A1f483282154c0b8A4CAeACFB4c720c67fdFb11"
     }
   }
 }
