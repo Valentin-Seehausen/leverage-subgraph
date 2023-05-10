@@ -135,13 +135,13 @@ export function handlePositionClosed(event: PositionClosedEvent): void {
   let pnlShares: BigInt;
   let pnlAssets: BigInt;
 
-  if (event.params.pnl.isZero()) {
+  if (event.params.pnlShares.isZero()) {
     // position made a loss (-100%)
     pnlShares = position.shares.neg();
     pnlAssets = position.collateral.neg();
   } else {
     // position made a profit (+100%)
-    pnlShares = event.params.pnl;
+    pnlShares = event.params.pnlShares;
     pnlAssets = previewRedeem(tradePair.liquidityPool, pnlShares);
   }
 

@@ -67,16 +67,32 @@ export class PositionClosed__Params {
     return this._event.parameters[1].value.toBigInt();
   }
 
-  get closePrice(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+  get isLong(): boolean {
+    return this._event.parameters[2].value.toBoolean();
   }
 
-  get closeDate(): BigInt {
+  get shares(): BigInt {
     return this._event.parameters[3].value.toBigInt();
   }
 
-  get pnl(): BigInt {
+  get entryPrice(): BigInt {
     return this._event.parameters[4].value.toBigInt();
+  }
+
+  get leverage(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get pnlShares(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
+  }
+
+  get closePrice(): BigInt {
+    return this._event.parameters[7].value.toBigInt();
+  }
+
+  get closeDate(): BigInt {
+    return this._event.parameters[8].value.toBigInt();
   }
 }
 
@@ -180,28 +196,19 @@ export class TradePair__positionsResult {
   value2: BigInt;
   value3: boolean;
   value4: BigInt;
-  value5: BigInt;
-  value6: BigInt;
-  value7: BigInt;
 
   constructor(
     value0: Address,
     value1: BigInt,
     value2: BigInt,
     value3: boolean,
-    value4: BigInt,
-    value5: BigInt,
-    value6: BigInt,
-    value7: BigInt
+    value4: BigInt
   ) {
     this.value0 = value0;
     this.value1 = value1;
     this.value2 = value2;
     this.value3 = value3;
     this.value4 = value4;
-    this.value5 = value5;
-    this.value6 = value6;
-    this.value7 = value7;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -211,9 +218,6 @@ export class TradePair__positionsResult {
     map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
     map.set("value3", ethereum.Value.fromBoolean(this.value3));
     map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
-    map.set("value5", ethereum.Value.fromUnsignedBigInt(this.value5));
-    map.set("value6", ethereum.Value.fromUnsignedBigInt(this.value6));
-    map.set("value7", ethereum.Value.fromUnsignedBigInt(this.value7));
     return map;
   }
 
@@ -235,18 +239,6 @@ export class TradePair__positionsResult {
 
   getEntryPrice(): BigInt {
     return this.value4;
-  }
-
-  getLiquidationPrice(): BigInt {
-    return this.value5;
-  }
-
-  getTakeProfitPrice(): BigInt {
-    return this.value6;
-  }
-
-  getOpenDate(): BigInt {
-    return this.value7;
   }
 }
 
@@ -300,7 +292,7 @@ export class TradePair extends ethereum.SmartContract {
   positions(param0: BigInt): TradePair__positionsResult {
     let result = super.call(
       "positions",
-      "positions(uint256):(address,uint256,uint256,bool,uint256,uint256,uint256,uint256)",
+      "positions(uint256):(address,uint128,uint32,bool,uint256)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
 
@@ -309,10 +301,7 @@ export class TradePair extends ethereum.SmartContract {
       result[1].toBigInt(),
       result[2].toBigInt(),
       result[3].toBoolean(),
-      result[4].toBigInt(),
-      result[5].toBigInt(),
-      result[6].toBigInt(),
-      result[7].toBigInt()
+      result[4].toBigInt()
     );
   }
 
@@ -321,7 +310,7 @@ export class TradePair extends ethereum.SmartContract {
   ): ethereum.CallResult<TradePair__positionsResult> {
     let result = super.tryCall(
       "positions",
-      "positions(uint256):(address,uint256,uint256,bool,uint256,uint256,uint256,uint256)",
+      "positions(uint256):(address,uint128,uint32,bool,uint256)",
       [ethereum.Value.fromUnsignedBigInt(param0)]
     );
     if (result.reverted) {
@@ -334,10 +323,7 @@ export class TradePair extends ethereum.SmartContract {
         value[1].toBigInt(),
         value[2].toBigInt(),
         value[3].toBoolean(),
-        value[4].toBigInt(),
-        value[5].toBigInt(),
-        value[6].toBigInt(),
-        value[7].toBigInt()
+        value[4].toBigInt()
       )
     );
   }
