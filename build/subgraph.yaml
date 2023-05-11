@@ -8,7 +8,7 @@ dataSources:
     source:
       abi: TradePair
       address: "0x8D56a71aF6109E7Fc94B2fE4b1FFa223D2cB63C9"
-      startBlock: 8981441
+      startBlock: 19393922
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -43,7 +43,7 @@ dataSources:
     source:
       abi: LiquidityPool
       address: "0x402C11286b400F4ce7A9309f484fF31fcbd834A2"
-      startBlock: 8981441
+      startBlock: 19393922
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

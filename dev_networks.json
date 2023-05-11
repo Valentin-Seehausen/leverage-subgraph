@@ -22,11 +22,11 @@
   "arbitrum-goerli": {
     "TradePair": {
       "address": "0x3EDDEC4425a20f1F948fF81E4570E00Aeae33fE8",
-      "startBlock": 8981441
+      "startBlock": 19393922
     },
     "LiquidityPool": {
       "address": "0x6Eb435021463E305A88bf57DCC5DaC7498CA59f9",
-      "startBlock": 8981441
+      "startBlock": 19393922
     }
   }
 }
