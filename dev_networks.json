@@ -1,0 +1,32 @@
+{
+  "sepolia": {
+    "TradePair": {
+      "address": "0x58FaA4C57137f198381e0eDCB70b884cee0b79D0",
+      "startBlock": 3393593
+    },
+    "LiquidityPool": {
+      "address": "0x266951D992Dcb5B4b5554f8B2B8B88E8547e3B76",
+      "startBlock": 3393593
+    }
+  },
+  "mumbai": {
+    "TradePair": {
+      "address": "0x4A1f483282154c0b8A4CAeACFB4c720c67fdFb11",
+      "startBlock": 35426987
+    },
+    "LiquidityPool": {
+      "address": "0xe972E9ae95EadfB997E96520341AC24426b29e21",
+      "startBlock": 35426987
+    }
+  },
+  "arbitrum-goerli": {
+    "TradePair": {
+      "address": "0x3EDDEC4425a20f1F948fF81E4570E00Aeae33fE8",
+      "startBlock": 8981441
+    },
+    "LiquidityPool": {
+      "address": "0x6Eb435021463E305A88bf57DCC5DaC7498CA59f9",
+      "startBlock": 8981441
+    }
+  }
+}
