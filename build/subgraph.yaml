@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: TradePair
-    network: mumbai
+    network: arbitrum-goerli
     source:
       abi: TradePair
-      address: "0x4A1f483282154c0b8A4CAeACFB4c720c67fdFb11"
-      startBlock: 35426987
+      address: "0x8D56a71aF6109E7Fc94B2fE4b1FFa223D2cB63C9"
+      startBlock: 19393922
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -39,11 +39,11 @@ dataSources:
       file: TradePair/TradePair.wasm
   - kind: ethereum
     name: LiquidityPool
-    network: mumbai
+    network: arbitrum-goerli
     source:
       abi: LiquidityPool
-      address: "0xe972E9ae95EadfB997E96520341AC24426b29e21"
-      startBlock: 35426987
+      address: "0x402C11286b400F4ce7A9309f484fF31fcbd834A2"
+      startBlock: 19393922
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

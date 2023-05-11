@@ -2,4 +2,11 @@
 
 # Deploy
 `graph codegen && graph build`
-`npm run deploy-fresh`
+
+Deploys dev version with mocked price feeds:
+`npm run deploy-arbitrum-goerli-dev`
+
+Deploys production version with chainlink price feeds
+`npm run deploy-arbitrum-goerli`
+
+
