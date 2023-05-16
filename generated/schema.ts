@@ -333,6 +333,40 @@ export class Position extends Entity {
       this.set("pnlSharesPercentage", Value.fromBigDecimal(<BigDecimal>value));
     }
   }
+
+  get payoutShares(): BigInt | null {
+    let value = this.get("payoutShares");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set payoutShares(value: BigInt | null) {
+    if (!value) {
+      this.unset("payoutShares");
+    } else {
+      this.set("payoutShares", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get payoutAssets(): BigInt | null {
+    let value = this.get("payoutAssets");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set payoutAssets(value: BigInt | null) {
+    if (!value) {
+      this.unset("payoutAssets");
+    } else {
+      this.set("payoutAssets", Value.fromBigInt(<BigInt>value));
+    }
+  }
 }
 
 export class Trader extends Entity {

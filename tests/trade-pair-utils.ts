@@ -64,7 +64,7 @@ export function closeDefaultPosition(
       shares,
       entryPrice,
       leverage,
-      profit ? pnlShares : BigInt.fromI32(0),
+      profit ? pnlShares : pnlShares.neg(),
       closePrice,
       closeDate
     )
