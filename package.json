@@ -1,6 +1,6 @@
 {
   "name": "p2p-leverage-operations",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
