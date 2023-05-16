@@ -10,6 +10,8 @@ import {
 import { Position, Protocol, TradePair, Trader } from "../generated/schema";
 import {
   getLiquidityPool,
+  getLpRatio,
+  getLpRatioBefore,
   previewRedeem,
   removeOpenInterestFromLiquidityPool,
 } from "./liquidity-pool";
@@ -100,6 +102,7 @@ export function handlePositionOpened(event: PositionOpenedEvent): void {
   position.trader = getTrader(event.params.trader.toHex()).id;
   position.collateral = event.params.collateral;
   position.shares = event.params.shares;
+  position.openLpRatio = event.params.shares.div(event.params.collateral);
   position.leverage = event.params.leverage;
   position.isLong = event.params.isLong;
   position.entryPrice = event.params.entryPrice;
@@ -132,6 +135,11 @@ export function handlePositionClosed(event: PositionClosedEvent): void {
 
   position.closePrice = event.params.closePrice;
   position.closeDate = event.params.closeDate;
+  position.closeLpRatio = getLpRatio(tradePair.liquidityPool);
+  position.closeLpRatioBefore = getLpRatioBefore(
+    tradePair.liquidityPool,
+    event.params.pnlShares
+  );
 
   position.pnlShares = event.params.pnlShares;
   let payoutShares = position.shares.plus(event.params.pnlShares);

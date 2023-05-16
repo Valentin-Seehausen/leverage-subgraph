@@ -7,16 +7,19 @@ type Position @entity {
   
   collateral: BigInt! 
   shares: BigInt! 
+  openLpRatio: BigInt!
 
   entryPrice: BigInt! 
   liquidationPrice: BigInt! 
   takeProfitPrice: BigInt! 
   minClosePrice: BigInt! 
   maxClosePrice: BigInt! 
-  closePrice: BigInt 
+  closePrice: BigInt
 
   openDate: BigInt! 
   openTransactionHash: Bytes!
+  closeLpRatio: BigInt
+  closeLpRatioBefore: BigInt
   
   # Closed
   closeDate: BigInt 

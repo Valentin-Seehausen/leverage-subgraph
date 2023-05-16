@@ -111,3 +111,58 @@ export function previewRedeem(
   }
   return liquidityPool.assets.times(shares).div(liquidityPool.shares);
 }
+
+export function getLpRatio(liquidityPoolId: string | null): BigInt {
+  if (liquidityPoolId == null) {
+    return BigInt.fromI32(1);
+  }
+
+  let liquidityPool = getLiquidityPool(liquidityPoolId as string);
+
+  // This will hopefully never happen, but when it does, we don't want to divide by zero
+  if (
+    liquidityPool.shares == BigInt.fromI32(0) ||
+    liquidityPool.assets == BigInt.fromI32(0)
+  ) {
+    return BigInt.fromI32(1);
+  }
+
+  return liquidityPool.shares.div(liquidityPool.assets);
+}
+
+export function getLpRatioBefore(
+  liquidityPoolId: string | null,
+  pnlShares: BigInt
+): BigInt {
+  if (liquidityPoolId == null) {
+    return BigInt.fromI32(1);
+  }
+
+  let liquidityPool = getLiquidityPool(liquidityPoolId as string);
+
+  // This will hopefully never happen, but when it does, we don't want to divide by zero
+  if (
+    liquidityPool.shares == BigInt.fromI32(0) ||
+    liquidityPool.assets == BigInt.fromI32(0)
+  ) {
+    return BigInt.fromI32(1);
+  }
+
+  log.info("pnlShares {}", [pnlShares.toString()]);
+
+  log.info("shares {}", [liquidityPool.shares.toString()]);
+
+  let sharesBefore = liquidityPool.shares;
+  if (pnlShares.gt(BigInt.fromI32(0))) {
+    sharesBefore = sharesBefore.minus(pnlShares);
+  } else {
+    // 99% will be burned (1% goes to protocol)
+    sharesBefore = sharesBefore.minus(
+      pnlShares.times(BigInt.fromI32(99)).div(BigInt.fromI32(100))
+    );
+  }
+
+  log.info("sharesBefore {}", [sharesBefore.toString()]);
+
+  return sharesBefore.div(liquidityPool.assets);
+}

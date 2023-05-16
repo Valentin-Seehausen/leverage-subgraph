@@ -4,18 +4,12 @@ import {
   test,
   clearStore,
   afterEach,
-  logStore,
 } from "matchstick-as/assembly/index";
 import { BigInt, ethereum } from "@graphprotocol/graph-ts";
-import {
-  PositionClosed,
-  PositionOpened,
-  ProtocolShareTaken,
-} from "../generated/TradePair/TradePair";
+import { ProtocolShareTaken } from "../generated/TradePair/TradePair";
 import {
   handleLiquidityPoolSet,
   handlePositionClosed,
-  handlePositionOpened,
   handleProtocolShareTaken,
 } from "../src/trade-pair";
 import { defaultAddress, newEvent } from "./utils/event.utils";
@@ -92,6 +86,7 @@ describe("TradePair Tests", () => {
     );
     assert.fieldEquals("Position", positionId, "openDate", openDate.toString());
     assert.fieldEquals("Position", positionId, "isOpen", "true");
+    assert.fieldEquals("Position", positionId, "openLpRatio", "1000");
   });
 
   test("Closes Position", () => {
@@ -144,6 +139,7 @@ describe("TradePair Tests", () => {
       isLong.toString()
     );
     assert.fieldEquals("Position", positionId.toString(), "isOpen", "false");
+    assert.fieldEquals("Position", positionId.toString(), "closeLpRatio", "1"); // Fallback on empty Lp
   });
 
   test("Increases Stats on open", () => {
@@ -415,6 +411,8 @@ describe("TradePair Tests", () => {
       "33.3333"
     );
     assert.fieldEquals("Position", p1.toString(), "pnlSharesPercentage", "100");
+    assert.fieldEquals("Position", p1.toString(), "closeLpRatio", "1500");
+    assert.fieldEquals("Position", p1.toString(), "closeLpRatioBefore", "1000"); // 2:2 ratio
   });
 
   test("Loss Position", () => {
@@ -453,5 +451,56 @@ describe("TradePair Tests", () => {
       "pnlSharesPercentage",
       "-100"
     );
+  });
+
+  test("Loss Position with deposit before", () => {
+    handleLiquidityPoolSet(createLiquidityPoolSetEvent(liquidityPoolAddress));
+
+    // Simulate a 1:1 ratio before (from other position)
+    handleTransfer(createTransferEvent(ZERO_ADDRESS, defaultAddress, shares));
+    handleDeposit(createDepositEvent(liquidityPoolAddress, collateral, shares));
+
+    // Open a position (2:2 ratio)
+    handleDeposit(createDepositEvent(liquidityPoolAddress, collateral, shares));
+    handleTransfer(createTransferEvent(ZERO_ADDRESS, defaultAddress, shares));
+    let p1 = openDefaultPosition();
+
+    // Position Loss: Burn 99% shares (1% for protocol) (1.01:2 ratio)
+    handleTransfer(
+      createTransferEvent(
+        defaultAddress,
+        ZERO_ADDRESS,
+        shares.times(BigInt.fromI32(99)).div(BigInt.fromI32(100))
+      )
+    );
+    closeDefaultPosition(p1, false);
+
+    assert.fieldEquals(
+      "Position",
+      p1.toString(),
+      "pnlShares",
+      shares.neg().toString() // shares at entry
+    );
+    assert.fieldEquals(
+      "Position",
+      p1.toString(),
+      "pnlAssets",
+      collateral.neg().toString() // all of collateral
+    );
+    assert.fieldEquals("Position", p1.toString(), "payoutAssets", "0");
+    assert.fieldEquals(
+      "Position",
+      p1.toString(),
+      "pnlAssetsPercentage",
+      "-100"
+    );
+    assert.fieldEquals(
+      "Position",
+      p1.toString(),
+      "pnlSharesPercentage",
+      "-100"
+    );
+    assert.fieldEquals("Position", p1.toString(), "closeLpRatio", "505");
+    assert.fieldEquals("Position", p1.toString(), "closeLpRatioBefore", "1000");
   });
 });

@@ -124,6 +124,19 @@ export class Position extends Entity {
     this.set("shares", Value.fromBigInt(value));
   }
 
+  get openLpRatio(): BigInt {
+    let value = this.get("openLpRatio");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set openLpRatio(value: BigInt) {
+    this.set("openLpRatio", Value.fromBigInt(value));
+  }
+
   get entryPrice(): BigInt {
     let value = this.get("entryPrice");
     if (!value || value.kind == ValueKind.NULL) {
@@ -230,6 +243,40 @@ export class Position extends Entity {
 
   set openTransactionHash(value: Bytes) {
     this.set("openTransactionHash", Value.fromBytes(value));
+  }
+
+  get closeLpRatio(): BigInt | null {
+    let value = this.get("closeLpRatio");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set closeLpRatio(value: BigInt | null) {
+    if (!value) {
+      this.unset("closeLpRatio");
+    } else {
+      this.set("closeLpRatio", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get closeLpRatioBefore(): BigInt | null {
+    let value = this.get("closeLpRatioBefore");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set closeLpRatioBefore(value: BigInt | null) {
+    if (!value) {
+      this.unset("closeLpRatioBefore");
+    } else {
+      this.set("closeLpRatioBefore", Value.fromBigInt(<BigInt>value));
+    }
   }
 
   get closeDate(): BigInt | null {
