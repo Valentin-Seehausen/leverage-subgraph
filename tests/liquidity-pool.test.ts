@@ -51,13 +51,13 @@ describe("LiquidityPool Tests", () => {
       "LiquidityPool",
       liquidityPoolAddress.toHex(),
       "shares",
-      shares.times(BigInt.fromI32(2)).toString()
+      "0" // Shares get increased at Transfer event
     );
     assert.fieldEquals(
       "LiquidityPool",
       liquidityPoolAddress.toHex(),
       "openInterestShares",
-      shares.times(BigInt.fromI32(2)).toString()
+      shares.toString()
     );
     assert.fieldEquals(
       "LiquidityPool",
@@ -67,9 +67,8 @@ describe("LiquidityPool Tests", () => {
     );
   });
 
-  test("Burn", () => {
-    handleDeposit(createDepositEvent(defaultAddress, collateral, shares));
-    handleTransfer(createTransferEvent(defaultAddress, ZERO_ADDRESS, shares));
+  test("Mint", () => {
+    handleTransfer(createTransferEvent(ZERO_ADDRESS, defaultAddress, shares));
 
     assert.fieldEquals(
       "LiquidityPool",
@@ -81,13 +80,38 @@ describe("LiquidityPool Tests", () => {
       "LiquidityPool",
       liquidityPoolAddress.toHex(),
       "openInterestShares",
-      shares.times(BigInt.fromI32(2)).toString()
+      "0" // Handled in handleDeposit
     );
     assert.fieldEquals(
       "LiquidityPool",
       liquidityPoolAddress.toHex(),
       "assets",
-      collateral.toString()
+      "0" // Handled in handleDeposit
+    );
+  });
+
+  test("Burn", () => {
+    handleTransfer(createTransferEvent(ZERO_ADDRESS, defaultAddress, shares));
+    handleDeposit(createDepositEvent(defaultAddress, collateral, shares));
+    handleTransfer(createTransferEvent(defaultAddress, ZERO_ADDRESS, shares));
+
+    assert.fieldEquals(
+      "LiquidityPool",
+      liquidityPoolAddress.toHex(),
+      "shares",
+      "0" // Should decrease to 0
+    );
+    assert.fieldEquals(
+      "LiquidityPool",
+      liquidityPoolAddress.toHex(),
+      "openInterestShares",
+      shares.toString() // Handled at TradePair
+    );
+    assert.fieldEquals(
+      "LiquidityPool",
+      liquidityPoolAddress.toHex(),
+      "assets",
+      collateral.toString() // Handled at TradePair
     );
   });
 
@@ -101,13 +125,15 @@ describe("LiquidityPool Tests", () => {
 
     let positionId = openDefaultPosition();
     handleDeposit(createDepositEvent(defaultAddress, collateral, shares));
+    handleTransfer(createTransferEvent(ZERO_ADDRESS, defaultAddress, shares));
     closeDefaultPosition(positionId);
+    handleTransfer(createTransferEvent(ZERO_ADDRESS, defaultAddress, shares));
 
     assert.fieldEquals(
       "LiquidityPool",
       liquidityPoolAddress.toHex(),
       "shares",
-      shares.times(BigInt.fromI32(2)).toString()
+      shares.times(BigInt.fromI32(2)).toString() // Should have increasesd to 2x by minting
     );
     assert.fieldEquals(
       "LiquidityPool",
@@ -119,13 +145,17 @@ describe("LiquidityPool Tests", () => {
       "LiquidityPool",
       liquidityPoolAddress.toHex(),
       "assets",
-      collateral.toString()
+      collateral.toString() // But assets should still be the same
     );
   });
 
   test("Redeem", () => {
     handleProtocolSet(createProtocolSetEvent(protocolAddress));
     handleDeposit(createDepositEvent(defaultAddress, collateral, shares));
+    handleTransfer(createTransferEvent(ZERO_ADDRESS, defaultAddress, shares));
+    // Stimule profit
+    handleTransfer(createTransferEvent(ZERO_ADDRESS, defaultAddress, shares));
+    // And payout of half of the profit
     handleRedeem(
       createRedeemEvent(
         defaultAddress,
@@ -139,7 +169,7 @@ describe("LiquidityPool Tests", () => {
       "LiquidityPool",
       liquidityPoolAddress.toHex(),
       "shares",
-      shares.toString()
+      shares.times(BigInt.fromI32(2)).toString() // should stay at 2x, gets handled at burn event (not emitted here)
     );
     assert.fieldEquals(
       "LiquidityPool",

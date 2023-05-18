@@ -7,8 +7,8 @@ dataSources:
     network: arbitrum-goerli
     source:
       abi: TradePair
-      address: "0x8D56a71aF6109E7Fc94B2fE4b1FFa223D2cB63C9"
-      startBlock: 19393922
+      address: "0xc1ABE9d6B1d27931EDdADa451e944Fb2E8866ccE"
+      startBlock: 20031573
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -42,8 +42,8 @@ dataSources:
     network: arbitrum-goerli
     source:
       abi: LiquidityPool
-      address: "0x402C11286b400F4ce7A9309f484fF31fcbd834A2"
-      startBlock: 19393922
+      address: "0xb906dd4B0625D1EBADa7d88d6eC6dAC95CDd215c"
+      startBlock: 20031573
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

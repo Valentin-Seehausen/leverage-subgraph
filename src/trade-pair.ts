@@ -10,6 +10,8 @@ import {
 import { Position, Protocol, TradePair, Trader } from "../generated/schema";
 import {
   getLiquidityPool,
+  getLpRatio,
+  getLpRatioBefore,
   previewRedeem,
   removeOpenInterestFromLiquidityPool,
 } from "./liquidity-pool";
@@ -100,6 +102,7 @@ export function handlePositionOpened(event: PositionOpenedEvent): void {
   position.trader = getTrader(event.params.trader.toHex()).id;
   position.collateral = event.params.collateral;
   position.shares = event.params.shares;
+  position.openLpRatio = event.params.shares.div(event.params.collateral);
   position.leverage = event.params.leverage;
   position.isLong = event.params.isLong;
   position.entryPrice = event.params.entryPrice;
@@ -120,42 +123,43 @@ export function handlePositionOpened(event: PositionOpenedEvent): void {
   addStatsToTradePair(
     event.address.toHex(),
     event.params.collateral,
-    event.params.shares.times(BigInt.fromI32(2)),
+    event.params.shares,
     event.params.isLong
   );
 }
 
 export function handlePositionClosed(event: PositionClosedEvent): void {
+  // Gets fired after shares got minted or burned, so lp price is accurate
   let position = getPosition(event.params.positionId.toString());
   let tradePair = getTradePair(event.address.toHex());
 
   position.closePrice = event.params.closePrice;
   position.closeDate = event.params.closeDate;
+  position.closeLpRatio = getLpRatio(tradePair.liquidityPool);
+  position.closeLpRatioBefore = getLpRatioBefore(
+    tradePair.liquidityPool,
+    event.params.pnlShares
+  );
 
-  let pnlShares: BigInt;
-  let pnlAssets: BigInt;
-
-  if (event.params.pnlShares.isZero()) {
-    // position made a loss (-100%)
-    pnlShares = position.shares.neg();
-    pnlAssets = position.collateral.neg();
-  } else {
-    // position made a profit (+100%)
-    pnlShares = event.params.pnlShares;
-    pnlAssets = previewRedeem(tradePair.liquidityPool, pnlShares);
-  }
-
-  position.pnlShares = pnlShares;
-  position.pnlSharesPercentage = pnlShares
+  position.pnlShares = event.params.pnlShares;
+  let payoutShares = position.shares.plus(event.params.pnlShares);
+  log.info("1", []);
+  let payoutAssets = previewRedeem(tradePair.liquidityPool, payoutShares);
+  log.info("payoutAssets {}", [payoutAssets.toString()]);
+  let pnlAssets = payoutAssets.minus(position.collateral);
+  position.pnlSharesPercentage = event.params.pnlShares
     .toBigDecimal()
     .times(BigDecimal.fromString("100"))
     .div(position.shares.toBigDecimal());
 
-  position.pnlAssets = pnlAssets;
   position.pnlAssetsPercentage = pnlAssets
     .toBigDecimal()
     .times(BigDecimal.fromString("100"))
     .div(position.collateral.toBigDecimal());
+
+  position.payoutShares = payoutShares;
+  position.payoutAssets = payoutAssets;
+  position.pnlAssets = pnlAssets;
 
   position.closeTransactionHash = event.transaction.hash;
   position.isOpen = false;
@@ -164,14 +168,11 @@ export function handlePositionClosed(event: PositionClosedEvent): void {
   addStatsToTradePair(
     event.address.toHex(),
     position.collateral.neg(),
-    position.shares.times(BigInt.fromI32(2)).neg(),
+    position.shares.neg(),
     position.isLong
   );
 
-  removeOpenInterestFromLiquidityPool(
-    tradePair.liquidityPool,
-    position.shares.times(BigInt.fromI32(2))
-  );
+  removeOpenInterestFromLiquidityPool(tradePair.liquidityPool, position.shares);
 }
 
 export function handleProtocolSet(event: ProtocolSetEvent): void {

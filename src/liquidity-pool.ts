@@ -1,4 +1,4 @@
-import { log, BigInt, Address } from "@graphprotocol/graph-ts";
+import { BigInt, Address, log } from "@graphprotocol/graph-ts";
 
 import {
   Deposit as DepositEvent,
@@ -28,6 +28,7 @@ export function getLiquidityPool(id: string): LiquidityPool {
   return liquidityPool as LiquidityPool;
 }
 
+// Called from trade-pair.ts
 export function removeOpenInterestFromLiquidityPool(
   liquidityPoolId: string | null,
   shares: BigInt
@@ -43,13 +44,13 @@ export function removeOpenInterestFromLiquidityPool(
 }
 
 export function handleDeposit(event: DepositEvent): void {
+  log.info("handleDeposit", []);
+
   let liquidityPool = getLiquidityPool(event.address.toHex());
 
-  liquidityPool.shares = liquidityPool.shares.plus(
-    event.params.shares.times(BigInt.fromI32(2))
-  );
+  // Shares get increased at Transfer event
   liquidityPool.openInterestShares = liquidityPool.openInterestShares.plus(
-    event.params.shares.times(BigInt.fromI32(2))
+    event.params.shares
   );
   liquidityPool.assets = liquidityPool.assets.plus(event.params.assets);
 
@@ -59,11 +60,11 @@ export function handleDeposit(event: DepositEvent): void {
 export function handleRedeem(event: RedeemEvent): void {
   let liquidityPool = getLiquidityPool(event.address.toHex());
 
-  liquidityPool.shares = liquidityPool.shares.minus(event.params.shares);
+  // Shares get decreased at Transfer event
   liquidityPool.assets = liquidityPool.assets.minus(event.params.assets);
   liquidityPool.save();
 
-  if (liquidityPool.protocol && liquidityPool.protocol) {
+  if (liquidityPool.protocol) {
     let protocol = getProtocol(liquidityPool.protocol as string);
     protocol.totalShares = protocol.totalShares.plus(
       event.params.protocolShares
@@ -78,6 +79,11 @@ export function handleTransfer(event: TransferEvent): void {
   // burn
   if (event.params.to == ZERO_ADDRESS) {
     liquidityPool.shares = liquidityPool.shares.minus(event.params.value);
+  }
+
+  // mint
+  if (event.params.from == ZERO_ADDRESS) {
+    liquidityPool.shares = liquidityPool.shares.plus(event.params.value);
   }
 
   liquidityPool.save();
@@ -99,5 +105,64 @@ export function previewRedeem(
   }
 
   let liquidityPool = getLiquidityPool(liquidityPoolId as string);
+
+  if (liquidityPool.shares == BigInt.fromI32(0)) {
+    return BigInt.fromI32(0);
+  }
   return liquidityPool.assets.times(shares).div(liquidityPool.shares);
+}
+
+export function getLpRatio(liquidityPoolId: string | null): BigInt {
+  if (liquidityPoolId == null) {
+    return BigInt.fromI32(1);
+  }
+
+  let liquidityPool = getLiquidityPool(liquidityPoolId as string);
+
+  // This will hopefully never happen, but when it does, we don't want to divide by zero
+  if (
+    liquidityPool.shares == BigInt.fromI32(0) ||
+    liquidityPool.assets == BigInt.fromI32(0)
+  ) {
+    return BigInt.fromI32(1);
+  }
+
+  return liquidityPool.shares.div(liquidityPool.assets);
+}
+
+export function getLpRatioBefore(
+  liquidityPoolId: string | null,
+  pnlShares: BigInt
+): BigInt {
+  if (liquidityPoolId == null) {
+    return BigInt.fromI32(1);
+  }
+
+  let liquidityPool = getLiquidityPool(liquidityPoolId as string);
+
+  // This will hopefully never happen, but when it does, we don't want to divide by zero
+  if (
+    liquidityPool.shares == BigInt.fromI32(0) ||
+    liquidityPool.assets == BigInt.fromI32(0)
+  ) {
+    return BigInt.fromI32(1);
+  }
+
+  log.info("pnlShares {}", [pnlShares.toString()]);
+
+  log.info("shares {}", [liquidityPool.shares.toString()]);
+
+  let sharesBefore = liquidityPool.shares;
+  if (pnlShares.gt(BigInt.fromI32(0))) {
+    sharesBefore = sharesBefore.minus(pnlShares);
+  } else {
+    // 99% will be burned (1% goes to protocol)
+    sharesBefore = sharesBefore.minus(
+      pnlShares.times(BigInt.fromI32(99)).div(BigInt.fromI32(100))
+    );
+  }
+
+  log.info("sharesBefore {}", [sharesBefore.toString()]);
+
+  return sharesBefore.div(liquidityPool.assets);
 }
