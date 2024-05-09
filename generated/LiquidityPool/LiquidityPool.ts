@@ -7,7 +7,7 @@ import {
   Entity,
   Bytes,
   Address,
-  BigInt
+  BigInt,
 } from "@graphprotocol/graph-ts";
 
 export class Approval extends ethereum.Event {
@@ -181,7 +181,7 @@ export class LiquidityPool extends ethereum.SmartContract {
     let result = super.call(
       "allowance",
       "allowance(address,address):(uint256)",
-      [ethereum.Value.fromAddress(owner), ethereum.Value.fromAddress(spender)]
+      [ethereum.Value.fromAddress(owner), ethereum.Value.fromAddress(spender)],
     );
 
     return result[0].toBigInt();
@@ -191,7 +191,7 @@ export class LiquidityPool extends ethereum.SmartContract {
     let result = super.tryCall(
       "allowance",
       "allowance(address,address):(uint256)",
-      [ethereum.Value.fromAddress(owner), ethereum.Value.fromAddress(spender)]
+      [ethereum.Value.fromAddress(owner), ethereum.Value.fromAddress(spender)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -203,7 +203,7 @@ export class LiquidityPool extends ethereum.SmartContract {
   approve(spender: Address, amount: BigInt): boolean {
     let result = super.call("approve", "approve(address,uint256):(bool)", [
       ethereum.Value.fromAddress(spender),
-      ethereum.Value.fromUnsignedBigInt(amount)
+      ethereum.Value.fromUnsignedBigInt(amount),
     ]);
 
     return result[0].toBoolean();
@@ -212,7 +212,7 @@ export class LiquidityPool extends ethereum.SmartContract {
   try_approve(spender: Address, amount: BigInt): ethereum.CallResult<boolean> {
     let result = super.tryCall("approve", "approve(address,uint256):(bool)", [
       ethereum.Value.fromAddress(spender),
-      ethereum.Value.fromUnsignedBigInt(amount)
+      ethereum.Value.fromUnsignedBigInt(amount),
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -238,7 +238,7 @@ export class LiquidityPool extends ethereum.SmartContract {
 
   balanceOf(account: Address): BigInt {
     let result = super.call("balanceOf", "balanceOf(address):(uint256)", [
-      ethereum.Value.fromAddress(account)
+      ethereum.Value.fromAddress(account),
     ]);
 
     return result[0].toBigInt();
@@ -246,7 +246,7 @@ export class LiquidityPool extends ethereum.SmartContract {
 
   try_balanceOf(account: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall("balanceOf", "balanceOf(address):(uint256)", [
-      ethereum.Value.fromAddress(account)
+      ethereum.Value.fromAddress(account),
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -276,8 +276,8 @@ export class LiquidityPool extends ethereum.SmartContract {
       "decreaseAllowance(address,uint256):(bool)",
       [
         ethereum.Value.fromAddress(spender),
-        ethereum.Value.fromUnsignedBigInt(subtractedValue)
-      ]
+        ethereum.Value.fromUnsignedBigInt(subtractedValue),
+      ],
     );
 
     return result[0].toBoolean();
@@ -285,15 +285,15 @@ export class LiquidityPool extends ethereum.SmartContract {
 
   try_decreaseAllowance(
     spender: Address,
-    subtractedValue: BigInt
+    subtractedValue: BigInt,
   ): ethereum.CallResult<boolean> {
     let result = super.tryCall(
       "decreaseAllowance",
       "decreaseAllowance(address,uint256):(bool)",
       [
         ethereum.Value.fromAddress(spender),
-        ethereum.Value.fromUnsignedBigInt(subtractedValue)
-      ]
+        ethereum.Value.fromUnsignedBigInt(subtractedValue),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -308,8 +308,8 @@ export class LiquidityPool extends ethereum.SmartContract {
       "depositCollateral(address,uint256):(uint256)",
       [
         ethereum.Value.fromAddress(trader),
-        ethereum.Value.fromUnsignedBigInt(assets)
-      ]
+        ethereum.Value.fromUnsignedBigInt(assets),
+      ],
     );
 
     return result[0].toBigInt();
@@ -317,15 +317,15 @@ export class LiquidityPool extends ethereum.SmartContract {
 
   try_depositCollateral(
     trader: Address,
-    assets: BigInt
+    assets: BigInt,
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "depositCollateral",
       "depositCollateral(address,uint256):(uint256)",
       [
         ethereum.Value.fromAddress(trader),
-        ethereum.Value.fromUnsignedBigInt(assets)
-      ]
+        ethereum.Value.fromUnsignedBigInt(assets),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -340,8 +340,8 @@ export class LiquidityPool extends ethereum.SmartContract {
       "increaseAllowance(address,uint256):(bool)",
       [
         ethereum.Value.fromAddress(spender),
-        ethereum.Value.fromUnsignedBigInt(addedValue)
-      ]
+        ethereum.Value.fromUnsignedBigInt(addedValue),
+      ],
     );
 
     return result[0].toBoolean();
@@ -349,15 +349,15 @@ export class LiquidityPool extends ethereum.SmartContract {
 
   try_increaseAllowance(
     spender: Address,
-    addedValue: BigInt
+    addedValue: BigInt,
   ): ethereum.CallResult<boolean> {
     let result = super.tryCall(
       "increaseAllowance",
       "increaseAllowance(address,uint256):(bool)",
       [
         ethereum.Value.fromAddress(spender),
-        ethereum.Value.fromUnsignedBigInt(addedValue)
-      ]
+        ethereum.Value.fromUnsignedBigInt(addedValue),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -385,7 +385,7 @@ export class LiquidityPool extends ethereum.SmartContract {
     let result = super.call(
       "previewDeposit",
       "previewDeposit(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(assets)]
+      [ethereum.Value.fromUnsignedBigInt(assets)],
     );
 
     return result[0].toBigInt();
@@ -395,7 +395,7 @@ export class LiquidityPool extends ethereum.SmartContract {
     let result = super.tryCall(
       "previewDeposit",
       "previewDeposit(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(assets)]
+      [ethereum.Value.fromUnsignedBigInt(assets)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -408,7 +408,7 @@ export class LiquidityPool extends ethereum.SmartContract {
     let result = super.call(
       "previewRedeem",
       "previewRedeem(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(shares)]
+      [ethereum.Value.fromUnsignedBigInt(shares)],
     );
 
     return result[0].toBigInt();
@@ -418,7 +418,7 @@ export class LiquidityPool extends ethereum.SmartContract {
     let result = super.tryCall(
       "previewRedeem",
       "previewRedeem(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(shares)]
+      [ethereum.Value.fromUnsignedBigInt(shares)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -489,7 +489,7 @@ export class LiquidityPool extends ethereum.SmartContract {
 
   tradePairs(param0: Address): boolean {
     let result = super.call("tradePairs", "tradePairs(address):(bool)", [
-      ethereum.Value.fromAddress(param0)
+      ethereum.Value.fromAddress(param0),
     ]);
 
     return result[0].toBoolean();
@@ -497,7 +497,7 @@ export class LiquidityPool extends ethereum.SmartContract {
 
   try_tradePairs(param0: Address): ethereum.CallResult<boolean> {
     let result = super.tryCall("tradePairs", "tradePairs(address):(bool)", [
-      ethereum.Value.fromAddress(param0)
+      ethereum.Value.fromAddress(param0),
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -509,7 +509,7 @@ export class LiquidityPool extends ethereum.SmartContract {
   transfer(to: Address, amount: BigInt): boolean {
     let result = super.call("transfer", "transfer(address,uint256):(bool)", [
       ethereum.Value.fromAddress(to),
-      ethereum.Value.fromUnsignedBigInt(amount)
+      ethereum.Value.fromUnsignedBigInt(amount),
     ]);
 
     return result[0].toBoolean();
@@ -518,7 +518,7 @@ export class LiquidityPool extends ethereum.SmartContract {
   try_transfer(to: Address, amount: BigInt): ethereum.CallResult<boolean> {
     let result = super.tryCall("transfer", "transfer(address,uint256):(bool)", [
       ethereum.Value.fromAddress(to),
-      ethereum.Value.fromUnsignedBigInt(amount)
+      ethereum.Value.fromUnsignedBigInt(amount),
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -534,8 +534,8 @@ export class LiquidityPool extends ethereum.SmartContract {
       [
         ethereum.Value.fromAddress(from),
         ethereum.Value.fromAddress(to),
-        ethereum.Value.fromUnsignedBigInt(amount)
-      ]
+        ethereum.Value.fromUnsignedBigInt(amount),
+      ],
     );
 
     return result[0].toBoolean();
@@ -544,7 +544,7 @@ export class LiquidityPool extends ethereum.SmartContract {
   try_transferFrom(
     from: Address,
     to: Address,
-    amount: BigInt
+    amount: BigInt,
   ): ethereum.CallResult<boolean> {
     let result = super.tryCall(
       "transferFrom",
@@ -552,8 +552,8 @@ export class LiquidityPool extends ethereum.SmartContract {
       [
         ethereum.Value.fromAddress(from),
         ethereum.Value.fromAddress(to),
-        ethereum.Value.fromUnsignedBigInt(amount)
-      ]
+        ethereum.Value.fromUnsignedBigInt(amount),
+      ],
     );
     if (result.reverted) {
       return new ethereum.CallResult();

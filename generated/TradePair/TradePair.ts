@@ -7,7 +7,7 @@ import {
   Entity,
   Bytes,
   Address,
-  BigInt
+  BigInt,
 } from "@graphprotocol/graph-ts";
 
 export class ChainlinkAggregatorSet extends ethereum.Event {
@@ -202,7 +202,7 @@ export class TradePair__positionsResult {
     value1: BigInt,
     value2: BigInt,
     value3: boolean,
-    value4: BigInt
+    value4: BigInt,
   ) {
     this.value0 = value0;
     this.value1 = value1;
@@ -251,7 +251,7 @@ export class TradePair extends ethereum.SmartContract {
     let result = super.call(
       "chainlinkAggregator",
       "chainlinkAggregator():(address)",
-      []
+      [],
     );
 
     return result[0].toAddress();
@@ -261,7 +261,7 @@ export class TradePair extends ethereum.SmartContract {
     let result = super.tryCall(
       "chainlinkAggregator",
       "chainlinkAggregator():(address)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -280,7 +280,7 @@ export class TradePair extends ethereum.SmartContract {
     let result = super.tryCall(
       "liquidityPool",
       "liquidityPool():(address)",
-      []
+      [],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -293,7 +293,7 @@ export class TradePair extends ethereum.SmartContract {
     let result = super.call(
       "positions",
       "positions(uint256):(address,uint128,uint32,bool,uint256)",
-      [ethereum.Value.fromUnsignedBigInt(param0)]
+      [ethereum.Value.fromUnsignedBigInt(param0)],
     );
 
     return new TradePair__positionsResult(
@@ -301,17 +301,17 @@ export class TradePair extends ethereum.SmartContract {
       result[1].toBigInt(),
       result[2].toBigInt(),
       result[3].toBoolean(),
-      result[4].toBigInt()
+      result[4].toBigInt(),
     );
   }
 
   try_positions(
-    param0: BigInt
+    param0: BigInt,
   ): ethereum.CallResult<TradePair__positionsResult> {
     let result = super.tryCall(
       "positions",
       "positions(uint256):(address,uint128,uint32,bool,uint256)",
-      [ethereum.Value.fromUnsignedBigInt(param0)]
+      [ethereum.Value.fromUnsignedBigInt(param0)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -323,8 +323,8 @@ export class TradePair extends ethereum.SmartContract {
         value[1].toBigInt(),
         value[2].toBigInt(),
         value[3].toBoolean(),
-        value[4].toBigInt()
-      )
+        value[4].toBigInt(),
+      ),
     );
   }
 

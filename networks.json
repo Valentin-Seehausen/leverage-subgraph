@@ -1,12 +1,12 @@
 {
-  "arbitrum-goerli": {
+  "arbitrum-sepolia": {
     "TradePair": {
-      "address": "0x9077E326fEEf58b1F04B556A12B20aAF2f4e2FD2",
-      "startBlock": 20032403
+      "address": "0x402C11286b400F4ce7A9309f484fF31fcbd834A2",
+      "startBlock": 42324312
     },
     "LiquidityPool": {
-      "address": "0x39dDFbfD3e1517669D050664EB2bA433A7143E95",
-      "startBlock": 20032403
+      "address": "0xeE7661b284c0423ae99700a894C39Ce600c8d7CC",
+      "startBlock": 42324312
     }
   }
 }

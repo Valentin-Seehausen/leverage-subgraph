@@ -8,16 +8,16 @@
     "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ p2p-leverage-operations",
     "deploy-sepolia": "graph codegen && graph build --network sepolia && graph deploy --studio p2p-leverage-operations",
     "deploy-mumbai": "graph codegen && graph build --network mumbai && graph deploy --studio mumbai-p2p-leverage",
-    "deploy-arbitrum-goerli": "graph codegen && graph build --network arbitrum-goerli && graph deploy --studio hyperbolic-finance",
-    "deploy-arbitrum-goerli-dev": "graph codegen && graph build --network arbitrum-goerli --network-file 'dev_networks.json' && graph deploy --studio hyperbolic-finance-dev",
+    "deploy-arbitrum-sepolia": "graph codegen && graph build --network arbitrum-sepolia && graph deploy --studio hyperbolic-finance",
+    "deploy-arbitrum-sepolia-dev": "graph codegen && graph build --network arbitrum-sepolia --network-file 'dev_networks.json' && graph deploy --studio hyperbolic-finance-dev",
     "create-local": "graph create --node http://localhost:8020/ p2p-leverage-operations",
     "remove-local": "graph remove --node http://localhost:8020/ p2p-leverage-operations",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 p2p-leverage-operations",
     "test": "graph test"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.48.0",
-    "@graphprotocol/graph-ts": "0.29.1"
+    "@graphprotocol/graph-cli": "0.71.2",
+    "@graphprotocol/graph-ts": "0.35.1"
   },
   "devDependencies": {
     "matchstick-as": "^0.5.0"
