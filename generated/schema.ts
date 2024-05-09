@@ -8,7 +8,7 @@ import {
   store,
   Bytes,
   BigInt,
-  BigDecimal
+  BigDecimal,
 } from "@graphprotocol/graph-ts";
 
 export class Position extends Entity {
@@ -23,10 +23,14 @@ export class Position extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Position must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Position must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("Position", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): Position | null {
+    return changetype<Position | null>(store.get_in_block("Position", id));
   }
 
   static load(id: string): Position | null {
@@ -428,10 +432,14 @@ export class Trader extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Trader must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Trader must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("Trader", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): Trader | null {
+    return changetype<Trader | null>(store.get_in_block("Trader", id));
   }
 
   static load(id: string): Trader | null {
@@ -451,13 +459,12 @@ export class Trader extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get positions(): Array<string> {
-    let value = this.get("positions");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toStringArray();
-    }
+  get positions(): PositionLoader {
+    return new PositionLoader(
+      "Trader",
+      this.get("id")!.toString(),
+      "positions",
+    );
   }
 }
 
@@ -473,10 +480,14 @@ export class TradePair extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type TradePair must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type TradePair must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("TradePair", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): TradePair | null {
+    return changetype<TradePair | null>(store.get_in_block("TradePair", id));
   }
 
   static load(id: string): TradePair | null {
@@ -621,10 +632,14 @@ export class Protocol extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Protocol must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Protocol must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("Protocol", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): Protocol | null {
+    return changetype<Protocol | null>(store.get_in_block("Protocol", id));
   }
 
   static load(id: string): Protocol | null {
@@ -670,10 +685,16 @@ export class LiquidityPool extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type LiquidityPool must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type LiquidityPool must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set("LiquidityPool", id.toString(), this);
     }
+  }
+
+  static loadInBlock(id: string): LiquidityPool | null {
+    return changetype<LiquidityPool | null>(
+      store.get_in_block("LiquidityPool", id),
+    );
   }
 
   static load(id: string): LiquidityPool | null {
@@ -747,5 +768,23 @@ export class LiquidityPool extends Entity {
     } else {
       this.set("protocol", Value.fromString(<string>value));
     }
+  }
+}
+
+export class PositionLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): Position[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<Position[]>(value);
   }
 }
