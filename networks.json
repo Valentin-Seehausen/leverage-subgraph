@@ -1,12 +1,12 @@
 {
   "arbitrum-sepolia": {
     "TradePair": {
-      "address": "0x402C11286b400F4ce7A9309f484fF31fcbd834A2",
-      "startBlock": 42324312
+      "address": "0x6Eb435021463E305A88bf57DCC5DaC7498CA59f9",
+      "startBlock": 42372322
     },
     "LiquidityPool": {
-      "address": "0xeE7661b284c0423ae99700a894C39Ce600c8d7CC",
-      "startBlock": 42324312
+      "address": "0xb95dAd613673A15baDD68AfA034C02BBa3a79473",
+      "startBlock": 42372322
     }
   }
 }
